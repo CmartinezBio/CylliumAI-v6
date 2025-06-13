@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diseño de Formulaciones - Cyllium AI</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/naitus-template.css">
+    <link rel="stylesheet" href="css/naitus-guide.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/66b2bdd969.js" crossorigin="anonymous"></script>
+    <style>
+        body#static {
+            background: linear-gradient(135deg, #1a1d2b 0%, #2c3e50 50%, #1a1d2b 100%);
+            min-height: 100vh;
+            margin: 0;
+            position: relative;
+            font-family: 'Inter', sans-serif;
+            padding: 20px 0;
+        }
+
+        body {
+            zoom: 70%;
+        }
+
+        body#static::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(63, 207, 142, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(100, 212, 164, 0.15) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .content-container {
+            position: relative;
+            z-index: 2;
+            background: linear-gradient(135deg, rgba(23, 26, 39, 0.95), rgba(41, 45, 62, 0.9));
+            padding: 50px;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            width: 95%;
+            max-width: 900px;
+            margin: 20px auto;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(63, 207, 142, 0.2);
+        }
+
+        .content-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3fcf8e, #64d4a4);
+            border-radius: 24px 24px 0 0;
+        }
+
+        .page-title {
+            text-align: center;
+            color: #ffffff;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #3fcf8e, #64d4a4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 10px rgba(63, 207, 142, 0.3);
+        }
+
+        .form-section {
+            background: linear-gradient(135deg, rgba(41, 45, 62, 0.9), rgba(53, 58, 79, 0.8));
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(63, 207, 142, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3fcf8e, #64d4a4);
+            border-radius: 16px 16px 0 0;
+        }
+
+        .form-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(63, 207, 142, 0.2);
+            border-color: rgba(63, 207, 142, 0.5);
+        }
+
+        .section-title {
+            color: #3fcf8e;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            color: #ffffff;
+            font-weight: 500;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-control, .form-select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 12px;
+            padding: 12px 16px;
+            width: 100%;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-control:focus, .form-select:focus {
+            outline: none;
+            border-color: #3fcf8e;
+            box-shadow: 0 0 0 3px rgba(63, 207, 142, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+
+        .form-select option {
+            background-color: #1a1d2b;
+            color: white;
+            padding: 10px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #3fcf8e;
+        }
+
+        .checkbox-group label {
+            color: #ffffff;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+
+        .calculate-btn {
+            background: linear-gradient(135deg, #3fcf8e, #64d4a4);
+            border: none;
+            border-radius: 50px;
+            padding: 18px 40px;
+            color: #1a1d2b;
+            font-weight: 700;
+            font-size: 18px;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(63, 207, 142, 0.4);
+            width: 100%;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(63, 207, 142, 0.5);
+            background: linear-gradient(135deg, #35b879, #5bc99a);
+        }
+
+        .results-container {
+            display: none;
+            background: linear-gradient(135deg, rgba(63, 207, 142, 0.1), rgba(100, 212, 164, 0.05));
+            border-radius: 16px;
+            padding: 30px;
+            margin-top: 30px;
+            color: white;
+            border: 1px solid rgba(63, 207, 142, 0.3);
+        }
+
+        .result-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #3fcf8e;
+        }
+
+        .result-title {
+            color: #3fcf8e;
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .result-value {
+            color: #ffffff;
+            font-size: 1.1rem;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            color: white;
+            padding: 12px 20px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #3fcf8e;
+            color: #3fcf8e;
+            transform: translateY(-2px);
+        }
+
+        .range-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .range-input {
+            flex: 1;
+            height: 8px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+            appearance: none;
+        }
+
+        .range-input::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3fcf8e;
+            cursor: pointer;
+        }
+
+        .range-value {
+            color: #3fcf8e;
+            font-weight: 600;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            
+            .content-container {
+                padding: 30px 20px;
+                margin: 10px;
+                width: calc(100% - 20px);
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .back-btn {
+                top: 20px;
+                left: 20px;
+            }
+        }
+    </style>
+</head>
+<body id="static">
+    <a href="menu.html" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Volver al Menú
+    </a>
+
+    <main>
+        <div class="content-container">
+            <h1 class="page-title">¿Qué buscas para tu producto?</h1>
+            
+            <form id="formulationForm">
+                <!-- Carga Máxima -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-weight-hanging"></i>
+                        Especificaciones de Carga
+                    </h3>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="enableMaxLoad" onchange="toggleMaxLoad()">
+                        <label for="enableMaxLoad">Habilitar carga máxima específica</label>
+                    </div>
+                    <div class="form-group" id="maxLoadGroup" style="display: none;">
+                        <label class="form-label">Carga máxima (kg)</label>
+                        <div class="range-group">
+                            <input type="range" class="range-input" id="maxLoad" min="0.1" max="50" step="0.1" value="5" oninput="updateRangeValue('maxLoad', 'maxLoadValue')">
+                            <span class="range-value" id="maxLoadValue">5 kg</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tipo de Material -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-leaf"></i>
+                        Tipo de Material
+                    </h3>
+                    <div class="form-group">
+                        <label class="form-label">Selecciona el tipo de material deseado</label>
+                        <select class="form-select" id="materialType" required>
+                            <option value="">Selecciona una opción</option>
+                            <option value="reciclable">Reciclable</option>
+                            <option value="compostable">Compostable</option>
+                            <option value="biodegradable">Biodegradable</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Tipo de Certificación -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-certificate"></i>
+                        Certificación Requerida
+                    </h3>
+                    <div class="form-group">
+                        <label class="form-label">Tipo de certificación que necesitas</label>
+                        <select class="form-select" id="certificationType" required>
+                            <option value="">Selecciona una opción</option>
+                            <option value="compostabilidad-casera">Compostabilidad Casera (OK Compost HOME)</option>
+                            <option value="compostabilidad-industrial">Compostabilidad Industrial (EN 13432)</option>
+                            <option value="biodegradabilidad-marina">Biodegradabilidad Marina (ASTM D6691)</option>
+                            <option value="biodegradabilidad-suelo">Biodegradabilidad en Suelo (ASTM D5988)</option>
+                            <option value="reciclabilidad">Certificación de Reciclabilidad</option>
+                            <option value="base-biologica">Contenido de Base Biológica (ASTM D6400)</option>
+                            <option value="sin-certificacion">Sin certificación específica</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Uso del Producto -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-shopping-bag"></i>
+                        Uso del Producto
+                    </h3>
+                    <div class="form-group">
+                        <label class="form-label">¿Para qué utilizarás este material?</label>
+                        <select class="form-select" id="productUse" required>
+                            <option value="">Selecciona una opción</option>
+                            <optgroup label="Comercio y Retail">
+                                <option value="transporte-compras">Transporte de compras</option>
+                                <option value="empaque-regalo">Empaque de regalo y boutique</option>
+                                <option value="gestion-residuos">Gestión de residuos</option>
+                                <option value="almacenamiento-reutilizable">Almacenamiento reutilizable</option>
+                            </optgroup>
+                            <optgroup label="E-commerce y Logística">
+                                <option value="envio-productos-ligeros">Envío de productos ligeros</option>
+                                <option value="envio-productos-medianos">Envío de productos medianos</option>
+                                <option value="envio-productos-pesados">Envío de productos pesados y frágiles</option>
+                                <option value="correspondencia">Correspondencia y documentos</option>
+                                <option value="embalaje-estructural">Embalaje con estructura rígida</option>
+                            </optgroup>
+                            <optgroup label="Envasado de Alimentos">
+                                <option value="alimentos-secos-pequenos">Envasado de alimentos secos (snacks)</option>
+                                <option value="alimentos-secos-medianos">Envasado de granos y cereales</option>
+                                <option value="alimentos-liquidos">Envasado de líquidos y salsas</option>
+                                <option value="conservacion-alimentos">Conservación de alimentos frescos</option>
+                            </optgroup>
+                            <optgroup label="Protección y Embalaje">
+                                <option value="proteccion-fragiles">Protección de productos frágiles</option>
+                                <option value="envoltorio-flexible">Envoltorio flexible y ajustable</option>
+                                <option value="contencion-textil">Contención de productos textiles</option>
+                                <option value="sujecion-elementos">Sujeción de elementos</option>
+                            </optgroup>
+                            <optgroup label="Industrial y Agricultura">
+                                <option value="almacenamiento-granel-ligero">Almacenamiento a granel (ligero)</option>
+                                <option value="almacenamiento-granel-mediano">Almacenamiento a granel (mediano)</option>
+                                <option value="almacenamiento-granel-pesado">Almacenamiento a granel (pesado)</option>
+                                <option value="proteccion-agricola">Protección agrícola</option>
+                                <option value="contencion-temporal">Contención temporal</option>
+                                <option value="identificacion-productos">Identificación de productos</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="calculate-btn">
+                    <i class="fas fa-calculator"></i> Calcular Formulación
+                </button>
+            </form>
+
+            <!-- Resultados -->
+            <div id="results" class="results-container">
+                <h2 style="color: #3fcf8e; text-align: center; margin-bottom: 30px;">
+                    <i class="fas fa-flask"></i> Recomendación de Formulación
+                </h2>
+                
+                <div class="result-item">
+                    <div class="result-title">Materialidad Recomendada</div>
+                    <div class="result-value" id="recommendedMaterial"></div>
+                </div>
+                
+                <div class="result-item">
+                    <div class="result-title">Espesor Recomendado</div>
+                    <div class="result-value" id="recommendedThickness"></div>
+                </div>
+                
+                <div class="result-item">
+                    <div class="result-title">Dimensiones Recomendadas</div>
+                    <div class="result-value" id="recommendedDimensions"></div>
+                </div>
+                
+                <div class="result-item">
+                    <div class="result-title">Arquitectura y Características</div>
+                    <div class="result-value" id="recommendedArchitecture"></div>
+                </div>
+                
+                <div class="result-item">
+                    <div class="result-title">Propiedades Adicionales</div>
+                    <div class="result-value" id="additionalProperties"></div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-title">Certificaciones Disponibles</div>
+                    <div class="result-value" id="availableCertifications"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function toggleMaxLoad() {
+            const checkbox = document.getElementById('enableMaxLoad');
+            const maxLoadGroup = document.getElementById('maxLoadGroup');
+            maxLoadGroup.style.display = checkbox.checked ? 'block' : 'none';
+        }
+
+        function updateRangeValue(inputId, valueId) {
+            const input = document.getElementById(inputId);
+            const valueElement = document.getElementById(valueId);
+            valueElement.textContent = input.value + ' kg';
+        }
+
+        function getDimensions(productUse) {
+            const dimensions = {
+                // Comercio y Retail
+                'transporte-compras': { width: 30, height: 40, features: 'Asas reforzadas tipo camiseta' },
+                'empaque-regalo': { width: 25, height: 35, features: 'Fuelle lateral de 8cm, asa troquelada' },
+                'gestion-residuos': { width: 50, height: 70, features: 'Boca reforzada con cordón de cierre' },
+                'almacenamiento-reutilizable': { width: 40, height: 45, features: 'Asas largas, refuerzo en base' },
+                
+                // E-commerce y Logística
+                'envio-productos-ligeros': { width: 15, height: 20, features: 'Solapa adhesiva autosellante' },
+                'envio-productos-medianos': { width: 25, height: 35, features: 'Cierre hermético con strip de seguridad' },
+                'envio-productos-pesados': { width: 40, height: 50, features: 'Refuerzo lateral, válvula de aire, esquinas soldadas' },
+                'correspondencia': { width: 23, height: 16, features: 'Solapa triangular adhesiva, base reforzada' },
+                'embalaje-estructural': { width: 30, height: 25, features: 'Estructura plegable con pestañas de ensamble' },
+                
+                // Envasado de Alimentos
+                'alimentos-secos-pequenos': { width: 10, height: 15, features: 'Zipper superior, válvula de aire, fondo plano' },
+                'alimentos-secos-medianos': { width: 20, height: 30, features: 'Zipper reforzado, esquinas soldadas, fuelle lateral' },
+                'alimentos-liquidos': { width: 15, height: 25, features: 'Válvula dispensadora, esquinas redondeadas, base estable' },
+                'conservacion-alimentos': { width: 25, height: 35, features: 'Cierre hermético, válvula de vacío, refuerzo perimetral' },
+                
+                // Protección y Embalaje
+                'proteccion-fragiles': { width: 100, height: 150, features: 'Burbujas de aire de 10mm, perforaciones de corte' },
+                'envoltorio-flexible': { width: 50, height: 200, features: 'Bobina continua, adherencia controlada, estiramiento 300%' },
+                'contencion-textil': { width: 25, height: 40, features: 'Abertura superior, costuras termoselladas, fuelle lateral' },
+                'sujecion-elementos': { width: 0.5, height: 20, features: 'Cabeza de trinquete, superficie antideslizante, tensión ajustable' },
+                
+                // Industrial y Agricultura
+                'almacenamiento-granel-ligero': { width: 40, height: 60, features: 'Costura lateral reforzada, boca abierta, base plana' },
+                'almacenamiento-granel-mediano': { width: 50, height: 80, features: 'Válvula de llenado, costura de seguridad, asas laterales' },
+                'almacenamiento-granel-pesado': { width: 70, height: 110, features: 'Sistema anti-derrame, válvula industrial, refuerzo perimetral' },
+                'proteccion-agricola': { width: 120, height: 500, features: 'Perforaciones de drenaje, resistencia UV, anclajes laterales' },
+                'contencion-temporal': { width: 15, height: 12, features: 'Tapa hermética, esquinas redondeadas, apilable' },
+                'identificacion-productos': { width: 5, height: 3, features: 'Adhesivo permanente, superficie mate, resistente al agua' }
+            };
+            
+            return dimensions[productUse] || { width: 20, height: 30, features: 'Estructura estándar' };
+        }
+
+        function calculateFormulation(materialType, certificationType, productUse, maxLoad) {
+            const materials = {
+                'biodegradable-compostable': {
+                    'BioE8i': 'TPS + PLA + PBAT (Termoplástico de almidón con aditivos)',
+                    'BioE9': 'PLA + PBAT (Mezcla optimizada para compostabilidad)',
+                    'BioE10': 'PLA puro (Ácido poliláctico)',
+                    'BioE14': 'PE Biobasado (Polietileno de origen vegetal)',
+                    'Calcio': 'CaCO3 + PLA + PBAT (Compuesto con carbonato cálcico)'
+                },
+                'reciclable': {
+                    'BioE14': 'PE Biobasado (Polietileno de origen vegetal)',
+                    'PET-Bio': 'PET biobasado reciclable',
+                    'PP-Bio': 'Polipropileno biobasado'
+                }
+            };
+
+            // Lógica de selección de material basada en uso y certificación
+            let recommendedMaterial = '';
+            let thickness = '';
+            let architecture = '';
+
+            // Selección de material
+            if (materialType === 'compostable' || materialType === 'biodegradable') {
+                if (certificationType === 'compostabilidad-casera') {
+                    recommendedMaterial = materials['biodegradable-compostable']['BioE9'];
+                } else if (certificationType === 'compostabilidad-industrial') {
+                    recommendedMaterial = materials['biodegradable-compostable']['BioE8i'];
+                } else if (certificationType === 'biodegradabilidad-marina') {
+                    recommendedMaterial = materials['biodegradable-compostable']['BioE10'];
+                } else {
+                    recommendedMaterial = materials['biodegradable-compostable']['BioE9'];
+                }
+            } else if (materialType === 'reciclable') {
+                recommendedMaterial = materials['reciclable']['BioE14'];
+            }
+
+            // Cálculo de espesor basado en uso y carga
+            const thicknessMap = {
+                // Comercio y Retail
+                'transporte-compras': { min: 15, max: 25 },
+                'empaque-regalo': { min: 40, max: 80 },
+                'gestion-residuos': { min: 20, max: 35 },
+                'almacenamiento-reutilizable': { min: 60, max: 100 },
+                
+                // E-commerce y Logística
+                'envio-productos-ligeros': { min: 50, max: 80 },
+                'envio-productos-medianos': { min: 80, max: 120 },
+                'envio-productos-pesados': { min: 120, max: 200 },
+                'correspondencia': { min: 45, max: 70 },
+                'embalaje-estructural': { min: 200, max: 350 },
+                
+                // Envasado de Alimentos
+                'alimentos-secos-pequenos': { min: 80, max: 120 },
+                'alimentos-secos-medianos': { min: 120, max: 180 },
+                'alimentos-liquidos': { min: 150, max: 200 },
+                'conservacion-alimentos': { min: 100, max: 150 },
+                
+                // Protección y Embalaje
+                'proteccion-fragiles': { min: 30, max: 50 },
+                'envoltorio-flexible': { min: 15, max: 25 },
+                'contencion-textil': { min: 40, max: 70 },
+                'sujecion-elementos': { min: 200, max: 400 },
+                
+                // Industrial y Agricultura
+                'almacenamiento-granel-ligero': { min: 150, max: 250 },
+                'almacenamiento-granel-mediano': { min: 200, max: 300 },
+                'almacenamiento-granel-pesado': { min: 250, max: 400 },
+                'proteccion-agricola': { min: 80, max: 120 },
+                'contencion-temporal': { min: 300, max: 500 },
+                'identificacion-productos': { min: 50, max: 80 }
+            };
+
+            const baseThickness = thicknessMap[productUse] || { min: 50, max: 100 };
+            let finalThickness = baseThickness.min;
+
+            if (maxLoad > 0) {
+                const loadFactor = Math.min(maxLoad / 10, 2);
+                finalThickness = Math.round(baseThickness.min * (1 + loadFactor * 0.5));
+            }
+
+            thickness = `${finalThickness} μm (micrón)`;
+
+            // Arquitectura específica según funcionalidad
+            const architectureMap = {
+                // Comercio y Retail
+                'transporte-compras': 'Bolsa tipo camiseta con asas reforzadas',
+                'empaque-regalo': 'Bolsa boutique con fuelle lateral y asa troquelada',
+                'gestion-residuos': 'Bolsa con cordón de cierre y refuerzo en boca',
+                'almacenamiento-reutilizable': 'Bolsa multiuso con asas largas y base reforzada',
+                
+                // E-commerce y Logística
+                'envio-productos-ligeros': 'Bolsa ecommerce plana con cierre autoadhesivo',
+                'envio-productos-medianos': 'Bolsa ecommerce con fuelle expandible y strip de seguridad',
+                'envio-productos-pesados': 'Saco reforzado con válvula de aire y esquinas soldadas',
+                'correspondencia': 'Sobre postal rígido con solapa reforzada',
+                'embalaje-estructural': 'Caja corrugada biodegradable con sistema de ensamble',
+                
+                // Envasado de Alimentos
+                'alimentos-secos-pequenos': 'Doypack pequeño con zipper y válvula de aire',
+                'alimentos-secos-medianos': 'Doypack mediano con fuelle lateral y zipper reforzado',
+                'alimentos-liquidos': 'Doypack con válvula dispensadora y base estable',
+                'conservacion-alimentos': 'Bolsa hermética con válvula de vacío',
+                
+                // Protección y Embalaje
+                'proteccion-fragiles': 'Film burbuja de aire con sistema de perforación',
+                'envoltorio-flexible': 'Film stretch con memoria elástica y adherencia progresiva',
+                'contencion-textil': 'Bolsa camisa con fuelle lateral y cierre superior',
+                'sujecion-elementos': 'Brida de seguridad con trinquete anti-retorno',
+                
+                // Industrial y Agricultura
+                'almacenamiento-granel-ligero': 'Saco tejido con costura perimetral y boca plegable',
+                'almacenamiento-granel-mediano': 'Saco válvula con sistema de llenado rápido y asas ergonómicas',
+                'almacenamiento-granel-pesado': 'Big bag industrial con loops de carga y descarga controlada',
+                'proteccion-agricola': 'Mulch film microperforado con sistema de anclaje integrado',
+                'contencion-temporal': 'Contenedor modular con tapa hermética y base antideslizante',
+                'identificacion-productos': 'Etiqueta termotransferible con adhesivo marino'
+            };
+
+            architecture = architectureMap[productUse] || 'Estructura estándar según aplicación';
+
+            // Obtener dimensiones recomendadas
+            const dimensions = getDimensions(productUse);
+            
+            return {
+                material: recommendedMaterial,
+                thickness: thickness,
+                architecture: architecture,
+                dimensions: dimensions
+            };
+        }
+
+        function getAdditionalProperties(materialType, certificationType) {
+            const properties = [];
+            
+            if (materialType === 'compostable') {
+                properties.push('Compostable en 90-180 días según condiciones');
+                properties.push('No genera microplásticos');
+            }
+            
+            if (materialType === 'biodegradable') {
+                properties.push('Biodegradable en 6-24 meses');
+                properties.push('Compatible con procesos naturales');
+            }
+            
+            if (materialType === 'reciclable') {
+                properties.push('100% reciclable en flujo convencional');
+                properties.push('Mantienes propiedades tras reciclado');
+            }
+            
+            properties.push('Resistente a la humedad');
+            properties.push('Sellado térmico optimizado');
+            
+            return properties;
+        }
+
+        function getAvailableCertifications(certificationType) {
+            const certifications = {
+                'compostabilidad-casera': ['OK Compost HOME', 'ASTM D6868', 'BPI Certified'],
+                'compostabilidad-industrial': ['EN 13432', 'ASTM D6400', 'BPI Certified'],
+                'biodegradabilidad-marina': ['ASTM D6691', 'OECD 306'],
+                'biodegradabilidad-suelo': ['ASTM D5988', 'ISO 17556'],
+                'reciclabilidad': ['Cradle to Cradle', 'ISCC PLUS'],
+                'base-biologica': ['ASTM D6866', 'EN 16785-1']
+            };
+            
+            return certifications[certificationType] || ['Certificaciones estándar disponibles'];
+        }
+
+        document.getElementById('formulationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const materialType = document.getElementById('materialType').value;
+            const certificationType = document.getElementById('certificationType').value;
+            const productUse = document.getElementById('productUse').value;
+            const maxLoadEnabled = document.getElementById('enableMaxLoad').checked;
+            const maxLoad = maxLoadEnabled ? parseFloat(document.getElementById('maxLoad').value) : 0;
+            
+            if (!materialType || !certificationType || !productUse) {
+                alert('Por favor completa todos los campos requeridos');
+                return;
+            }
+            
+            const results = calculateFormulation(materialType, certificationType, productUse, maxLoad);
+            const additionalProperties = getAdditionalProperties(materialType, certificationType);
+            const availableCertifications = getAvailableCertifications(certificationType);
+            
+            // Mostrar resultados
+            document.getElementById('recommendedMaterial').textContent = results.material;
+            document.getElementById('recommendedThickness').textContent = results.thickness;
+            document.getElementById('recommendedDimensions').innerHTML = `
+                <strong>Ancho:</strong> ${results.dimensions.width} cm<br>
+                <strong>Alto:</strong> ${results.dimensions.height} cm<br>
+                <strong>Características:</strong> ${results.dimensions.features}
+            `;
+            document.getElementById('recommendedArchitecture').textContent = results.architecture;
+            document.getElementById('additionalProperties').innerHTML = additionalProperties.map(prop => `• ${prop}`).join('<br>');
+            document.getElementById('availableCertifications').innerHTML = availableCertifications.map(cert => `• ${cert}`).join('<br>');
+            
+            document.getElementById('results').style.display = 'block';
+            
+            // Scroll to results
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,19 @@
+/* ===================================
+    Google font
+====================================== */
+@import url('https://fonts.googleapis.com/css2?family=Geologica:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Gelasio:wght@400;500;600;700&family=Geologica:wght@400;500;600;700;800&display=swap');
+/* ===================================
+    Variables
+====================================== */
+:root {
+  --main-font: Geologica, sans-serif;
+  --main-bg: #1c1a1c;
+  --green: #34be9e;
+  --white: #f5f5f5;
+  --gray: #333333;
+}
+
+.text-white {
+  color: white !important;
+}

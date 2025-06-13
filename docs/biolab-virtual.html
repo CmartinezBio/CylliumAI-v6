@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biolab Virtual - Cyllium AI</title>
+    <script src="https://cdn.jsdelivr.net/npm/marzipano@0.10.2/dist/marzipano.js"></script>
+    <script>
+        // Add error handling for Marzipano loading
+        window.addEventListener('error', function(e) {
+            if (e.target.src && e.target.src.includes('marzipano')) {
+                console.error('Error loading Marzipano library. Trying alternative source...');
+                // Try loading from original source as fallback
+                const fallbackScript = document.createElement('script');
+                fallbackScript.src = 'https://www.marzipano.net/releases/marzipano-0.10.2.js';
+                document.head.appendChild(fallbackScript);
+            }
+        }, true);
+    </script>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/naitus-template.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            overflow: hidden;
+        }
+
+        #pano {
+            width: 100%;
+            height: 100%;
+        }
+
+        .nav-hotspot {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(63, 207, 142, 0.8);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .nav-hotspot:hover {
+            background: rgba(63, 207, 142, 1);
+            transform: scale(1.1);
+        }
+
+        .nav-hotspot::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-right: 4px solid white;
+            border-top: 4px solid white;
+            transform: rotate(45deg);
+            top: 18px;
+            left: 16px;
+        }
+
+        .info-hotspot {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .info-hotspot:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: scale(1.1);
+        }
+
+        .info-hotspot::after {
+            content: 'i';
+            position: absolute;
+            color: #292d3e;
+            font-family: serif;
+            font-style: italic;
+            font-weight: bold;
+            font-size: 24px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .info-tooltip {
+            position: fixed;
+            background: rgba(41, 45, 62, 0.95);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 350px;
+            font-size: 14px;
+            line-height: 1.5;
+            z-index: 1000;
+            display: none;
+            border: 1px solid rgba(63, 207, 142, 0.5);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-height: 50vh;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(63, 207, 142, 0.5) rgba(41, 45, 62, 0.95);
+            text-align: left;
+        }
+
+        .info-tooltip::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 10px 10px 0;
+            border-style: solid;
+            border-color: rgba(41, 45, 62, 0.95) transparent transparent;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            background: rgba(41, 45, 62, 0.9);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(63, 207, 142, 0.9);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3fcf8e;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .debug-overlay {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            z-index: 1000;
+            display: none;
+        }
+
+        .debug-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 0, 0, 0.7);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .debug-button.active {
+            background: rgba(0, 255, 0, 0.7);
+        }
+
+        .debug-coordinates {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .copy-button {
+            background: #3fcf8e;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            color: white;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        /* Ajuste para tooltips cerca de los bordes */
+        .info-hotspot.left .info-tooltip {
+            transform: translateX(-10%);
+            left: 0;
+        }
+
+        .info-hotspot.right .info-tooltip {
+            transform: translateX(-90%);
+            left: 100%;
+        }
+
+        .info-hotspot.top .info-tooltip {
+            bottom: 100%;
+            margin-bottom: 15px;
+        }
+
+        .info-hotspot.bottom .info-tooltip {
+            top: 100%;
+            bottom: auto;
+            margin-top: 15px;
+        }
+
+        /* Estilo para el texto dentro del tooltip */
+        .info-tooltip p {
+            margin: 0;
+            padding: 0;
+            color: #ffffff;
+        }
+
+        /* Estilos para la barra de scroll */
+        .info-tooltip::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .info-tooltip::-webkit-scrollbar-track {
+            background: rgba(41, 45, 62, 0.95);
+            border-radius: 3px;
+        }
+
+        .info-tooltip::-webkit-scrollbar-thumb {
+            background-color: rgba(63, 207, 142, 0.5);
+            border-radius: 3px;
+        }
+
+        /* Estilo común para todos los botones */
+        .cyllium-button {
+            background: rgba(41, 45, 62, 0.9);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Arial', sans-serif;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+            border: 1px solid rgba(63, 207, 142, 0.3);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .cyllium-button:hover {
+            background: rgba(63, 207, 142, 0.9);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .cyllium-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Posicionamiento específico para el botón de volver */
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+        }
+
+        /* Posicionamiento específico para el botón de debug */
+        .debug-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+        }
+
+        .debug-button.active {
+            background: rgba(63, 207, 142, 0.9);
+        }
+
+        /* Estilo específico para el botón de copiar en modo debug */
+        .copy-button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="pano"></div>
+    <button class="cyllium-button back-button" onclick="window.location.href='menu.html'">← Volver al Menú</button>
+    <button class="cyllium-button debug-button" onclick="toggleDebugMode()">Debug Mode</button>
+    <div class="debug-overlay">
+        <div>Current Scene: <span id="currentSceneId">-</span></div>
+        <div class="debug-coordinates">
+            Click anywhere to get coordinates
+        </div>
+        <button class="cyllium-button copy-button" onclick="copyCoordinates()">Copy Last Coordinates</button>
+    </div>
+    <div class="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <script>
+        // Variables globales
+        let debugMode = false;
+        let lastCoordinates = null;
+        let currentScene = null;
+        let viewer = null;
+        const sceneInstances = {};
+
+        // Configuración de las escenas
+        const scenes = {
+            scene1: {
+                id: '1',
+                file: '360/1.jpg',
+                connections: ['2'],
+                initialViewParameters: {
+                    pitch: 0,
+                    yaw: 0,
+                    fov: 1.5
+                }
+            },
+            scene2: {
+                id: '2',
+                file: '360/2.jpg',
+                connections: ['1', '3'],
+                initialViewParameters: {
+                    pitch: 0,
+                    yaw: 0,
+                    fov: 1.5
+                }
+            },
+            scene3: {
+                id: '3',
+                file: '360/3.jpg',
+                connections: ['2', '4'],
+                initialViewParameters: {
+                    pitch: 0,
+                    yaw: 0,
+                    fov: 1.5
+                }
+            },
+            scene4: {
+                id: '4',
+                file: '360/4.jpg',
+                connections: ['3', '5', '6', '7'],
+                initialViewParameters: {
+                    pitch: 0,
+                    yaw: 0,
+                    fov: 1.5
+                }
+            },
+            scene5: {
+                id: '5',
+                file: '360/5.jpg',
+                connections: ['4'],
+                initialViewParameters: {
+                    pitch: 0,
+                    yaw: 0,
+                    fov: 1.5
+                }
+            },
+            scene6: {
+                id: '6',
+                file: '360/6.jpg',
+                connections: ['4'],
+                initialViewParameters: {
+                    pitch: 0,
+                    yaw: 0,
+                    fov: 1.5
+                }
+            },
+            scene7: {
+                id: '7',
+                file: '360/7.jpg',
+                connections: ['4', '8'],
+                initialViewParameters: {
+                    pitch: 0,
+                    yaw: 0,
+                    fov: 1.5
+                }
+            },
+            scene8: {
+                id: '8',
+                file: '360/8.jpg',
+                connections: ['7'],
+                initialViewParameters: {
+                    pitch: 0,
+                    yaw: 0,
+                    fov: 1.5
+                }
+            }
+        };
+
+        // Funciones de debug
+        function toggleDebugMode() {
+            debugMode = !debugMode;
+            const debugButton = document.querySelector('.debug-button');
+            const debugOverlay = document.querySelector('.debug-overlay');
+            
+            debugButton.classList.toggle('active');
+            debugOverlay.style.display = debugMode ? 'block' : 'none';
+            
+            if (debugMode) {
+                document.getElementById('pano').addEventListener('click', handleDebugClick);
+                updateCurrentSceneDisplay();
+            } else {
+                document.getElementById('pano').removeEventListener('click', handleDebugClick);
+            }
+        }
+
+        function updateCurrentSceneDisplay() {
+            if (currentScene) {
+                const sceneId = Object.values(scenes).find(
+                    scene => sceneInstances[scene.id] === currentScene
+                )?.id || '-';
+                document.getElementById('currentSceneId').textContent = sceneId;
+            }
+        }
+
+        function handleDebugClick(event) {
+            if (!currentScene || !viewer) return;
+
+            const coords = viewer.view().screenToCoordinates({x: event.clientX, y: event.clientY});
+            
+            lastCoordinates = {
+                yaw: coords.yaw.toFixed(3),
+                pitch: coords.pitch.toFixed(3)
+            };
+
+            const coordsDisplay = document.querySelector('.debug-coordinates');
+            coordsDisplay.innerHTML = `
+                Yaw: ${lastCoordinates.yaw}
+                <br>
+                Pitch: ${lastCoordinates.pitch}
+                <br>
+                Use these coordinates in the staticHotspots configuration
+            `;
+        }
+
+        function copyCoordinates() {
+            if (!lastCoordinates) return;
+            
+            const coordText = `{
+    yaw: ${lastCoordinates.yaw},
+    pitch: ${lastCoordinates.pitch}
+}`;
+            
+            navigator.clipboard.writeText(coordText).then(() => {
+                alert('Coordinates copied to clipboard!');
+            });
+        }
+
+        // Ejemplo de puntos de información
+        const infoPoints = {
+            scene1: [
+                {
+                    yaw: 0.5,
+                    pitch: -0.2,
+                    text: "Entrada principal del laboratorio"
+                }
+            ],
+            scene4: [
+                {
+                    yaw: 0,
+                    pitch: -0.1,
+                    text: "Área central del laboratorio"
+                },
+                {
+                    yaw: 2,
+                    pitch: 0,
+                    text: "Equipamiento especializado"
+                }
+            ]
+        };
+
+        // Función para agregar hotspots estáticos
+        function addStaticHotspots(scene, sceneId) {
+            const hotspotData = staticHotspots[sceneId];
+            if (!hotspotData) return;
+
+            function closeAllTooltips() {
+                document.querySelectorAll('.info-tooltip').forEach(tooltip => {
+                    tooltip.style.display = 'none';
+                });
+            }
+
+            document.addEventListener('click', (event) => {
+                if (!event.target.closest('.info-hotspot')) {
+                    closeAllTooltips();
+                }
+            });
+
+            // Agregar hotspots informativos
+            if (hotspotData.info) {
+                hotspotData.info.forEach(point => {
+                    const element = document.createElement('div');
+                    element.className = 'info-hotspot';
+                    
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'info-tooltip';
+                    tooltip.textContent = point.text;
+                    document.body.appendChild(tooltip); // Mover el tooltip al body para posicionamiento fixed
+
+                    scene.hotspotContainer().createHotspot(element, point.spherical);
+                    
+                    element.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        const isVisible = tooltip.style.display === 'block';
+                        closeAllTooltips();
+                        
+                        if (!isVisible) {
+                            tooltip.style.display = 'block';
+                            updateTooltipPosition(tooltip, element);
+                        }
+                    });
+
+                    // Actualizar posición del tooltip al hacer scroll o resize
+                    window.addEventListener('scroll', () => {
+                        if (tooltip.style.display === 'block') {
+                            updateTooltipPosition(tooltip, element);
+                        }
+                    }, { passive: true });
+
+                    window.addEventListener('resize', () => {
+                        if (tooltip.style.display === 'block') {
+                            updateTooltipPosition(tooltip, element);
+                        }
+                    });
+                });
+            }
+
+            // Agregar hotspots de navegación
+            if (hotspotData.navigation) {
+                hotspotData.navigation.forEach(nav => {
+                    const element = document.createElement('div');
+                    element.className = 'nav-hotspot';
+                    
+                    scene.hotspotContainer().createHotspot(element, nav.spherical);
+                    
+                    element.addEventListener('click', () => {
+                        closeAllTooltips(); // Cerrar tooltips al cambiar de escena
+                        switchScene(nav.target);
+                    });
+                });
+            }
+        }
+
+        // Función para crear una escena
+        async function createScene(sceneData) {
+            try {
+                const levels = [
+                    { tileSize: 256, size: 256, fallbackOnly: true },
+                    { tileSize: 512, size: 512 },
+                    { tileSize: 512, size: 1024 },
+                    { tileSize: 512, size: 2048 },
+                    { tileSize: 512, size: 4096 }
+                ];
+
+                const source = new Marzipano.ImageUrlSource(function(tile) {
+                    return { url: sceneData.file };
+                });
+
+                const geometry = new Marzipano.EquirectGeometry([
+                    { width: 11904, height: 5952 }
+                ]);
+
+                const limiter = Marzipano.RectilinearView.limit.traditional(
+                    4096,
+                    100 * Math.PI / 180
+                );
+
+                const view = new Marzipano.RectilinearView(
+                    sceneData.initialViewParameters,
+                    limiter
+                );
+
+                const scene = viewer.createScene({
+                    source: source,
+                    geometry: geometry,
+                    view: view,
+                    pinFirstLevel: true
+                });
+
+                return { scene, view };
+            } catch (error) {
+                console.error('Error al crear la escena:', error);
+                throw error;
+            }
+        }
+
+        // Función para transición suave entre escenas
+        function smoothSceneTransition(fromScene, toScene, duration) {
+            return new Promise((resolve) => {
+                const startTime = performance.now();
+                
+                const fromView = fromScene.view;
+                const toView = toScene.view;
+                
+                const startPosition = {
+                    yaw: fromView.yaw(),
+                    pitch: fromView.pitch(),
+                    fov: fromView.fov()
+                };
+                
+                const endPosition = {
+                    yaw: toView.yaw(),
+                    pitch: toView.pitch(),
+                    fov: toView.fov()
+                };
+
+                // Ajustar el yaw para tomar la ruta más corta
+                let deltaYaw = endPosition.yaw - startPosition.yaw;
+                if (Math.abs(deltaYaw) > Math.PI) {
+                    if (deltaYaw > 0) {
+                        deltaYaw -= 2 * Math.PI;
+                    } else {
+                        deltaYaw += 2 * Math.PI;
+                    }
+                }
+
+                function animate(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    
+                    // Función de easing para suavizar el movimiento
+                    const easeProgress = 1 - Math.pow(1 - progress, 3);
+
+                    if (progress < 1) {
+                        // Interpolar posición
+                        const currentYaw = startPosition.yaw + deltaYaw * easeProgress;
+                        const currentPitch = startPosition.pitch + (endPosition.pitch - startPosition.pitch) * easeProgress;
+                        const currentFov = startPosition.fov + (endPosition.fov - startPosition.fov) * easeProgress;
+
+                        fromView.setYaw(currentYaw);
+                        fromView.setPitch(currentPitch);
+                        fromView.setFov(currentFov);
+
+                        requestAnimationFrame(animate);
+                    } else {
+                        resolve();
+                    }
+                }
+
+                requestAnimationFrame(animate);
+            });
+        }
+
+        // Función para cambiar entre escenas
+        async function switchScene(id) {
+            try {
+                const newSceneData = Object.values(scenes).find(s => s.id === id);
+                if (!newSceneData) {
+                    throw new Error('Escena no encontrada: ' + id);
+                }
+
+                const loadingOverlay = document.querySelector('.loading-overlay');
+                loadingOverlay.style.display = 'flex';
+
+                if (!sceneInstances[id]) {
+                    console.log('Creando nueva escena:', id);
+                    sceneInstances[id] = await createScene(newSceneData);
+                    addStaticHotspots(sceneInstances[id].scene, 'scene' + id);
+                }
+
+                const newScene = sceneInstances[id];
+
+                if (currentScene) {
+                    // Realizar transición suave
+                    await smoothSceneTransition(currentScene, newScene, 1000); // 1000ms = 1 segundo de transición
+                }
+
+                await newScene.scene.switchTo();
+                currentScene = newScene;
+
+                loadingOverlay.style.display = 'none';
+
+                if (debugMode) {
+                    updateCurrentSceneDisplay();
+                }
+            } catch (error) {
+                console.error('Error al cambiar de escena:', error);
+                const loadingOverlay = document.querySelector('.loading-overlay');
+                loadingOverlay.style.display = 'none';
+                alert('Error al cargar la escena. Por favor, intente de nuevo.');
+            }
+        }
+
+        // Función para convertir coordenadas de píxeles a coordenadas esféricas
+        function pixelToSpherical(x, y, imageWidth, imageHeight) {
+            const yaw = (x / imageWidth - 0.5) * 2 * Math.PI;
+            const pitch = (0.5 - y / imageHeight) * Math.PI;
+            return { yaw, pitch };
+        }
+
+        // Configuración de hotspots estáticos
+        const staticHotspots = {
+            scene1: {
+                info: [
+                    {
+                        spherical: { yaw: 1.093, pitch: -0.040 },
+                        text: "Bienvenidos a nuestro Biolab Virtual de Bioelements. En este centro de innovación y desarrollo nuestro equipo de expertos trabaja en soluciones sostenibles y que tengan impacto en la industria . También es donde se realizan pruebas de calidad y se desarrollan soluciones personalizadas para satisfacer las necesidades específicas de cada cliente. Nuestro compromiso con la excelencia y la sostenibilidad se refleja en cada investigación, cada prueba y cada breakthrough que ocurre en estas instalaciones. Adelante!"
+                    }
+                ],
+                navigation: [
+                    {
+                        spherical: { yaw: 1.949, pitch: 0.277 },
+                        target: '2'
+                    }
+                ]
+            },
+            scene2: {
+                info: [
+                    {
+                        spherical: { yaw: 1.152, pitch: 0.503 },
+                        text: "Aca podemos ver el estado de biodegradación de uno de nuestros materiales a través de nuestro microscopio. En esta imagen, puede apreciar una muestra de una bolsa después de 45 días de biodegradación. El proceso de limpieza revela claramente los patrones de degradación fúngica, permitiéndonos documentar y validar científicamente la efectividad de nuestros materiales biodegradables. El microscopio no solo es útil debido a que podemos ver el estado de nuestro productos si no que también podemos ver los procesos biológicos que caracterizan nuestra en accion!"
+                    }
+                ],
+                navigation: [
+                    {
+                        spherical: { yaw: 3.086, pitch: 0.188 },
+                        target: '1'
+                    },
+                    {
+                        spherical: { yaw: -0.460, pitch: 0.121 },
+                        target: '3'
+                    }
+                ]
+            },
+            scene3: {
+                info: [
+                    {
+                        spherical: { yaw: -0.541, pitch: 0.474 },
+                        text: "¡Bienvenidos a nuestro acuario! Aquí replicamos cuidadosamente las condiciones del mar para evaluar, de forma rigurosa, la biodegradación marina de nuestros productos. Esta evaluación es fundamental, ya que una gran parte de los residuos de la industria del packaging termina en ecosistemas marinos. Por eso, nos aseguramos de que nuestros bioplásticos cumplan con los más altos estándares de sostenibilidad y sean realmente seguros para el océano y la vida que alberga."
+                    }
+                ],
+                navigation: [
+                    {
+                        spherical: { yaw: -0.852, pitch: 0.168 },
+                        target: '4'
+                    },
+                    {
+                        spherical: { yaw: 1.105, pitch: 0.178 },
+                        target: '2'
+                    }
+                ]
+            },
+            scene4: {
+                info: [
+                    {
+                        spherical: { yaw: -1.328, pitch: 0.180 },
+                        text: "Aquí incubamos nuestros ensayos de biodegradación utilizando hongos filamentosos, organismos capaces de metabolizar activamente nuestros productos. Este proceso nos permite validar su biodegradabilidad en condiciones naturales, demostrando que los materiales pueden ser descompuestos por microorganismos presentes en el ambiente sin necesidad de intervenciones artificiales. Además, realizamos ensayos de biodegradación en condiciones anaeróbicas, que simulan los entornos de rellenos sanitarios profundos, donde el oxígeno es escaso o inexistente. Evaluar el comportamiento de nuestros productos en este tipo de ambientes es clave, ya que permite garantizar que su descomposición sea efectiva incluso en los escenarios más exigentes de disposición final de residuos. De esta forma, aseguramos que nuestros materiales no solo sean biodegradables, sino que lo sean de manera segura y eficiente en diversos contextos reales."
+                    }
+                ],
+                navigation: [
+                    {
+                        spherical: { yaw: 2.322, pitch: 0.165 },
+                        target: '3'
+                    },
+                    {
+                        spherical: { yaw: -1.967, pitch: 0.140 },
+                        target: '6'
+                    },
+                    {
+                        spherical: { yaw: -1.705, pitch: 0.191 },
+                        target: '5'
+                    },
+                    {
+                        spherical: { yaw: 0.286, pitch: 0.084 },
+                        target: '7'
+                    }
+                ]
+            },
+            scene5: {
+                info: [
+                    {
+                        spherical: { yaw: 2.455, pitch: 0.385 },
+                        text: "Bienvenido a nuestro banco de hongos especializado, un recurso vital para nuestra investigación en biodegradación. Mantenemos y cultivamos activamente diversas cepas de hongos, incluyendo Penicillium glabrum, Aspergillus flavus, Penicillium chrysogenum, Fusarium solani y Aspergillus niger. Esta colección única nos permite realizar evaluaciones continuas y exhaustivas de la biodegradabilidad de nuestros materiales."
+                    }
+                ],
+                navigation: [
+                    {
+                        spherical: { yaw: -0.780, pitch: 0.159 },
+                        target: '4'
+                    }
+                ]
+            },
+            scene6: {
+                info: [
+                    {
+                        spherical: { yaw: 2.003, pitch: 0.442 },
+                        text: "Dinamómetro: Este equipo de alta precisión nos permite evaluar rigurosamente las propiedades mecánicas de nuestros productos, siguiendo normativas y estándares internacionales de ensayo. Gracias a su tecnología avanzada, podemos medir con exactitud parámetros clave como la resistencia máxima a la tracción, la elongación, el módulo elástico y el punto de ruptura. Estas mediciones son fundamentales para garantizar que nuestros materiales no solo cumplan con los requisitos de calidad y seguridad, sino que también mantengan un rendimiento óptimo durante su uso. Evaluar la respuesta mecánica de nuestros productos es especialmente importante en aplicaciones como el packaging y los bioplásticos, donde se exige un equilibrio entre funcionalidad, resistencia y sostenibilidad. Con este control, aseguramos que cada desarrollo cumpla con los más altos estándares, desde la investigación hasta su aplicación final."
+                    },
+                    {
+                        spherical: { yaw: 0.417, pitch: 0.452 },
+                        text: "FTIR (Espectroscopía Infrarroja por Transformada de Fourier): Este sofisticado instrumento es el corazón tecnológico de nuestro laboratorio, ya que nos permite identificar y caracterizar con alta precisión la composición química de nuestros materiales. A través del análisis de las vibraciones moleculares, el FTIR nos entrega información detallada sobre los grupos funcionales presentes en cada muestra, lo que resulta fundamental para verificar la correcta formulación, detectar impurezas y asegurar la consistencia, pureza y calidad de nuestros productos en cada etapa del desarrollo."
+                    },
+                    {
+                        spherical: { yaw: 0.080, pitch: 0.357 },
+                        text: "Test de Coeficiente de Fricción: Una herramienta esencial para optimizar el rendimiento de nuestros films en entornos industriales. Este equipo permite a nuestros clientes maximizar su eficiencia productiva al garantizar las especificaciones exactas de fricción requeridas por sus máquinas."
+                    },
+                    {
+                        spherical: { yaw: -1.513, pitch: 0.163 },
+                        text: "Innovación, diversidad e ingenio se reflejan en nuestra colección de resinas para eco-packaging, donde cada formulación ha sido desarrollada pensando en el equilibrio perfecto entre sostenibilidad y rendimiento. Gracias a la selección de materias primas renovables, nuestras resinas ofrecen propiedades mecánicas y barreras de protección comparables a las de los polímeros convencionales, al tiempo que garantizan un menor impacto ambiental. Esta diversidad de composiciones permite adaptar soluciones específicas a diferentes necesidades de empaque —desde flexibles y ligeras hasta rígidas y resistentes— sin sacrificar la biodegradabilidad o la reciclabilidad. Con cada nuevo desarrollo, avanzamos hacia un futuro en el que el diseño de envases sea sinónimo de responsabilidad ecológica, eficiencia en la producción y en el rendimiento final."
+                    }
+                ],
+                navigation: [
+                    {
+                        spherical: { yaw: -0.981, pitch: 0.132 },
+                        target: '4'
+                    }
+                ]
+            },
+            scene7: {
+                info: [
+                    {
+                        spherical: { yaw: 0.463, pitch: 0.146 },
+                        text: "En esta área, sometemos nuestros productos a pruebas rigurosas de biodegradación en condiciones que combinan la acción de hongos, bacterias y movimiento marino. Este ambiente controlado nos permite evaluar la degradación en líquidos en movimiento, simulando condiciones reales del medio ambiente."
+                    }
+                ],
+                navigation: [
+                    {
+                        spherical: { yaw: 1.703, pitch: 0.082 },
+                        target: '8'
+                    },
+                    {
+                        spherical: { yaw: -0.365, pitch: 0.124 },
+                        target: '4'
+                    }
+                ]
+            },
+            scene8: {
+                info: [
+                    {
+                        spherical: { yaw: 1.756, pitch: 0.302 },
+                        text: "En esta área llevamos a cabo estudios de seguridad ambiental fundamentales para garantizar que nuestros materiales no representen riesgos para los ecosistemas durante y después de su degradación. Evaluamos cuidadosamente que, al descomponerse, nuestros productos no liberen sustancias tóxicas ni compuestos que puedan afectar la salud del suelo, el agua o los organismos vivos. Uno de los ensayos clave que realizamos es la prueba de germinación, donde semillas son expuestas a lixiviados obtenidos de nuestros materiales en proceso de degradación. Este análisis nos permite observar posibles efectos fitotóxicos y confirmar que nuestros productos son completamente seguros para el desarrollo de plantas y, por extensión, para el entorno natural. De este modo, aseguramos que nuestras soluciones sostenibles no solo cumplan con altos estándares de desempeño, sino que también promuevan activamente la protección y regeneración del medio ambiente."
+                    },
+                    {
+                        spherical: { yaw: 0.694, pitch: 0.337 },
+                        text: "Campana de Flujo Laminar: Esta instalación nos permite trabajar con elementos biológicos sensibles en un ambiente controlado y estéril. Garantizamos la integridad de nuestras pruebas al prevenir cualquier contaminación externa que pudiera afectar los resultados de nuestros análisis."
+                    }
+                ],
+                navigation: [
+                    {
+                        spherical: { yaw: -1.5, pitch: 0.2 },
+                        target: '7'
+                    }
+                ]
+            }
+        };
+
+        // Función para actualizar la posición del tooltip
+        function updateTooltipPosition(tooltip, hotspot) {
+            const hotspotRect = hotspot.getBoundingClientRect();
+            const tooltipHeight = tooltip.offsetHeight;
+            const viewportHeight = window.innerHeight;
+            const viewportWidth = window.innerWidth;
+
+            // Calcular posición inicial (centrada horizontalmente respecto al hotspot)
+            let left = hotspotRect.left + (hotspotRect.width / 2) - (tooltip.offsetWidth / 2);
+            let top = hotspotRect.top - tooltipHeight - 10; // 10px de espacio
+
+            // Ajustar horizontalmente si se sale de la pantalla
+            if (left < 20) left = 20;
+            if (left + tooltip.offsetWidth > viewportWidth - 20) {
+                left = viewportWidth - tooltip.offsetWidth - 20;
+            }
+
+            // Ajustar verticalmente si se sale de la pantalla
+            if (top < 20) {
+                // Si no hay espacio arriba, mostrar abajo del hotspot
+                top = hotspotRect.bottom + 10;
+            }
+
+            // Asegurar que el tooltip no se salga por abajo
+            if (top + tooltipHeight > viewportHeight - 20) {
+                top = viewportHeight - tooltipHeight - 20;
+            }
+
+            tooltip.style.left = `${left}px`;
+            tooltip.style.top = `${top}px`;
+        }
+
+        // Inicialización cuando el documento esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configuración del visor
+            const viewerOpts = {
+                controls: {
+                    mouseViewMode: 'drag',
+                    scrollZoom: true
+                }
+            };
+
+            // Crear el visor
+            viewer = new Marzipano.Viewer(document.getElementById('pano'), viewerOpts);
+
+            // Iniciar con la primera escena
+            console.log('Iniciando carga de la primera escena...');
+            switchScene('1').catch(error => {
+                console.error('Error al cargar la escena inicial:', error);
+            });
+        });
+    </script>
+</body>
+</html> 

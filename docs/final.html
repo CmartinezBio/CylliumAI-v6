@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/naitus-template.css" />
+    <link rel="stylesheet" href="css/naitus-guide.css" />
+    <link rel="stylesheet" href="css/main.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+    />
+    <!-- Fonts && Jquery -->
+    <script
+      src="https://kit.fontawesome.com/66b2bdd969.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <title>Final</title>
+    <style>
+      /* Language Selector Styles */
+      .language-container {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        z-index: 100;
+      }
+      
+      .language-select {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 20px;
+        color: white;
+        padding: 5px 10px;
+        font-size: 14px;
+        cursor: pointer;
+        text-align: center;
+        outline: none;
+        width: 110px;
+      }
+      
+      .language-select option {
+        background-color: #292d3e;
+        color: white;
+      }
+    </style>
+  </head>
+  <body id="static">
+    <!-- Language Selector -->
+    <div class="language-container">
+      <select id="language-select" class="language-select" onchange="changeLanguage(this.value)">
+        <option value="en">English</option>
+        <option value="es">Español</option>
+        <option value="pt">Português</option>
+      </select>
+    </div>
+    
+    <!-- Main -->
+    <main class="main-bg">
+      <div class="row justify-content-md-center justify-content-start">
+        <div class="logo final">
+          <h1 class="final-title">
+            Gracias <br />
+            por utilizar
+          </h1>
+          <img src="assets/logo-oficial.svg" alt="" />
+        </div>
+      </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/language.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>

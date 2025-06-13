@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API - Cyllium AI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #1a1a1a;
+            color: white;
+        }
+        
+        .test-section {
+            background-color: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 1px solid #3fcf8e;
+        }
+        
+        button {
+            background-color: #3fcf8e;
+            color: #1a1a1a;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            margin: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        button:hover {
+            background-color: #35b879;
+        }
+        
+        .error {
+            color: #ff6b6b;
+        }
+        
+        .success {
+            color: #3fcf8e;
+        }
+        
+        .result {
+            background-color: #1a1a1a;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        
+        input {
+            background-color: #1a1a1a;
+            color: white;
+            border: 1px solid #3fcf8e;
+            padding: 8px;
+            border-radius: 4px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test API de Productos - Cyllium AI</h1>
+    
+    <div class="test-section">
+        <h2>Información del Usuario</h2>
+        <p>User ID: <span id="user-id"></span></p>
+        <p>API URL: <span id="api-url"></span></p>
+    </div>
+
+    <div class="test-section">
+        <h2>1. Crear Producto de Prueba</h2>
+        <button onclick="testCreateProduct()">Crear Producto</button>
+        <div id="create-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Listar Productos</h2>
+        <button onclick="testListProducts()">Listar Productos</button>
+        <div id="list-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Obtener Producto Específico</h2>
+        <input type="text" id="product-id" placeholder="ID del producto">
+        <button onclick="testGetProduct()">Obtener Producto</button>
+        <div id="get-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Eliminar Producto</h2>
+        <input type="text" id="delete-product-id" placeholder="ID del producto a eliminar">
+        <button onclick="testDeleteProduct()">Eliminar Producto</button>
+        <div id="delete-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>5. Test Completo</h2>
+        <button onclick="runFullTest()">Ejecutar Test Completo</button>
+        <div id="full-test-result" class="result"></div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Display user info
+        document.getElementById('user-id').textContent = getUserId();
+        document.getElementById('api-url').textContent = API;
+
+        let lastCreatedProductId = null;
+
+        async function testCreateProduct() {
+            const resultDiv = document.getElementById('create-result');
+            resultDiv.textContent = 'Creando producto...';
+            
+            try {
+                const testProduct = {
+                    name: 'Producto de Prueba - ' + new Date().toLocaleString(),
+                    components: [
+                        {
+                            name: 'Componente Test',
+                            type: 'primary',
+                            material: 'bioe8i-resin',
+                            weight: 0.5
+                        }
+                    ],
+                    productionVolume: 100,
+                    totalImpact: {
+                        co2: 65.5
+                    }
+                };
+
+                const result = await saveProduct(testProduct);
+                lastCreatedProductId = result.id;
+                resultDiv.className = 'result success';
+                resultDiv.textContent = 'Producto creado exitosamente:\n' + JSON.stringify(result, null, 2);
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = 'Error al crear producto:\n' + error.message;
+            }
+        }
+
+        async function testListProducts() {
+            const resultDiv = document.getElementById('list-result');
+            resultDiv.textContent = 'Listando productos...';
+            
+            try {
+                const products = await loadUserProducts();
+                resultDiv.className = 'result success';
+                resultDiv.textContent = `Productos encontrados (${products.length}):\n` + JSON.stringify(products, null, 2);
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = 'Error al listar productos:\n' + error.message;
+            }
+        }
+
+        async function testGetProduct() {
+            const productId = document.getElementById('product-id').value;
+            const resultDiv = document.getElementById('get-result');
+            
+            if (!productId) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = 'Por favor ingresa un ID de producto';
+                return;
+            }
+
+            resultDiv.textContent = 'Obteniendo producto...';
+            
+            try {
+                const product = await getProduct(productId);
+                if (product) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = 'Producto encontrado:\n' + JSON.stringify(product, null, 2);
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = 'Producto no encontrado';
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = 'Error al obtener producto:\n' + error.message;
+            }
+        }
+
+        async function testDeleteProduct() {
+            const productId = document.getElementById('delete-product-id').value;
+            const resultDiv = document.getElementById('delete-result');
+            
+            if (!productId) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = 'Por favor ingresa un ID de producto';
+                return;
+            }
+
+            resultDiv.textContent = 'Eliminando producto...';
+            
+            try {
+                await deleteProduct(productId);
+                resultDiv.className = 'result success';
+                resultDiv.textContent = 'Producto eliminado exitosamente';
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = 'Error al eliminar producto:\n' + error.message;
+            }
+        }
+
+        async function runFullTest() {
+            const resultDiv = document.getElementById('full-test-result');
+            resultDiv.textContent = 'Ejecutando test completo...\n';
+            
+            try {
+                // 1. Crear producto
+                resultDiv.textContent += '1. Creando producto de prueba...\n';
+                const testProduct = {
+                    name: 'Test Completo - ' + new Date().toLocaleString(),
+                    components: [{
+                        name: 'Test Component',
+                        type: 'primary',
+                        material: 'pla',
+                        weight: 0.2
+                    }],
+                    productionVolume: 50,
+                    totalImpact: { co2: 18.15 }
+                };
+                
+                const created = await saveProduct(testProduct);
+                resultDiv.textContent += `✅ Producto creado con ID: ${created.id}\n`;
+
+                // 2. Listar productos
+                resultDiv.textContent += '2. Listando productos...\n';
+                const products = await loadUserProducts();
+                resultDiv.textContent += `✅ ${products.length} productos encontrados\n`;
+
+                // 3. Obtener producto específico
+                resultDiv.textContent += '3. Obteniendo producto específico...\n';
+                const retrieved = await getProduct(created.id);
+                if (retrieved) {
+                    resultDiv.textContent += `✅ Producto recuperado: ${retrieved.name}\n`;
+                } else {
+                    throw new Error('No se pudo recuperar el producto creado');
+                }
+
+                // 4. Eliminar producto
+                resultDiv.textContent += '4. Eliminando producto de prueba...\n';
+                await deleteProduct(created.id);
+                resultDiv.textContent += '✅ Producto eliminado\n';
+
+                // 5. Verificar eliminación
+                resultDiv.textContent += '5. Verificando eliminación...\n';
+                const deletedProduct = await getProduct(created.id);
+                if (!deletedProduct) {
+                    resultDiv.textContent += '✅ Producto efectivamente eliminado\n';
+                } else {
+                    resultDiv.textContent += '⚠️ El producto aún existe\n';
+                }
+
+                resultDiv.className = 'result success';
+                resultDiv.textContent += '\n🎉 Test completo exitoso!';
+                
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent += '\n❌ Error en test completo:\n' + error.message;
+            }
+        }
+
+        // Auto-fill product ID when a product is created
+        function updateProductIdFields() {
+            if (lastCreatedProductId) {
+                document.getElementById('product-id').value = lastCreatedProductId;
+                document.getElementById('delete-product-id').value = lastCreatedProductId;
+            }
+        }
+
+        // Update product ID fields every few seconds
+        setInterval(updateProductIdFields, 2000);
+    </script>
+</body>
+</html> 

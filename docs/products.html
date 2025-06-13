@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <link rel="stylesheet" href="css/bootstrap.min.css" />
+  <link rel="stylesheet" href="css/naitus-template.css" />
+  <link rel="stylesheet" href="css/naitus-guide.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <script src="https://kit.fontawesome.com/66b2bdd969.js" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <title>Productos - Cyllium AI</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: auto;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #1a1d2b 0%, #2c3e50 50%, #1a1d2b 100%);
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(63, 207, 142, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(100, 212, 164, 0.15) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .main-bg {
+      min-height: 100vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      position: relative;
+      z-index: 2;
+    }
+
+    .scroll-wrapper {
+      padding: 40px 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .content-container {
+      background: linear-gradient(135deg, rgba(23, 26, 39, 0.95), rgba(41, 45, 62, 0.9));
+      padding: 50px;
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(63, 207, 142, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .content-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #3fcf8e, #64d4a4, #85e6c1);
+      border-radius: 24px 24px 0 0;
+    }
+
+    .page-title {
+      text-align: center;
+      color: #ffffff;
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 40px;
+      background: linear-gradient(135deg, #3fcf8e, #64d4a4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 2px 10px rgba(63, 207, 142, 0.3);
+    }
+
+    .ai-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(63, 207, 142, 0.2);
+      border: 1px solid rgba(63, 207, 142, 0.3);
+      border-radius: 20px;
+      padding: 8px 16px;
+      margin-bottom: 30px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #3fcf8e;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .form-group {
+      margin-bottom: 2rem;
+    }
+
+    .form-control {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 15px 20px;
+      font-size: 16px;
+      font-weight: 500;
+      width: 100%;
+      box-sizing: border-box;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #3fcf8e;
+      box-shadow: 0 0 0 3px rgba(63, 207, 142, 0.2);
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+    }
+
+    .form-control option {
+      background-color: #1a1d2b;
+      color: white;
+      padding: 10px;
+    }
+
+    .form-label {
+      margin-bottom: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title {
+      color: #ffffff;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 30px 0 20px 0;
+      padding: 15px 0;
+      border-bottom: 2px solid rgba(63, 207, 142, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .accordion-button {
+      background: linear-gradient(135deg, rgba(41, 45, 62, 0.8), rgba(53, 58, 79, 0.7));
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px !important;
+      color: white;
+      padding: 20px 25px;
+      margin-bottom: 10px;
+      font-weight: 600;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .accordion-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #3fcf8e, transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .accordion-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(63, 207, 142, 0.2);
+      border-color: rgba(63, 207, 142, 0.4);
+    }
+
+    .accordion-button:hover::before {
+      opacity: 1;
+    }
+
+    .accordion-button.active {
+      background: linear-gradient(135deg, #3fcf8e, #64d4a4);
+      color: #1a1d2b;
+      border-color: #3fcf8e;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(63, 207, 142, 0.4);
+    }
+
+    .accordion-button.active::before {
+      opacity: 1;
+      background: linear-gradient(90deg, transparent, rgba(26, 29, 43, 0.3), transparent);
+    }
+
+    .product-preview {
+      text-align: center;
+      margin: 30px 0;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .item-img {
+      max-width: 100%;
+      height: auto;
+      max-height: 300px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease;
+    }
+
+    .item-img:hover {
+      transform: scale(1.05);
+    }
+
+    .calculate-btn {
+      background: linear-gradient(135deg, #3fcf8e, #64d4a4);
+      border: none;
+      border-radius: 50px;
+      padding: 18px 40px;
+      color: #1a1d2b;
+      font-weight: 700;
+      font-size: 18px;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 30px rgba(63, 207, 142, 0.4);
+      width: 100%;
+      max-width: 400px;
+      margin: 30px auto 0;
+      display: block;
+    }
+
+    .calculate-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 40px rgba(63, 207, 142, 0.5);
+      background: linear-gradient(135deg, #35b879, #5bc99a);
+    }
+
+    .language-container {
+      position: fixed;
+      top: 30px;
+      right: 30px;
+      z-index: 100;
+    }
+    
+    .language-select {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      color: white;
+      padding: 10px 15px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      outline: none;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+
+    .language-select:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .language-select option {
+      background-color: #1a1d2b;
+      color: white;
+    }
+
+    .accordion.style-1 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    @media (min-width: 768px) {
+      .accordion.style-1 {
+        grid-template-columns: 1fr 1fr;
+        align-items: start;
+      }
+
+      .list-items {
+        order: 1;
+      }
+
+      .content-items {
+        order: 2;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .content-container {
+        padding: 30px 25px;
+      }
+      
+      .page-title {
+        font-size: 2rem;
+      }
+
+      .language-container {
+        top: 20px;
+        right: 20px;
+      }
+    }
+  </style>
+</head>
+<body id="static">
+  <!-- Language Selector -->
+  <div class="language-container">
+    <select id="language-select" class="language-select" onchange="changeLanguage(this.value)">
+      <option value="en">🇺🇸 English</option>
+      <option value="es">🇪🇸 Español</option>
+      <option value="pt">🇧🇷 Português</option>
+    </select>
+  </div>
+  
+  <main class="main-bg">
+    <div class="scroll-wrapper">
+      <div class="content-container">
+        <div class="text-center">
+          <div class="ai-badge">
+            <i class="fas fa-recycle"></i>
+            Biodegradabilidad con IA
+          </div>
+          <h1 class="page-title">🧬 Análisis de Biodegradabilidad</h1>
+        </div>
+
+        <div class="section-title">
+          <i class="fas fa-boxes"></i>
+          Tipos de Producto
+        </div>
+        
+        <div class="accordion style-1" id="accordionExample">
+          <div class="list-items">
+            <h2 class="accordion-header">
+              <button class="accordion-button active" data-tipo="BIOBOLSA BRIDA" data-img="assets/brida.png">
+                <i class="fas fa-shopping-bag" style="margin-right: 10px;"></i>
+                Biobolsa Brida
+              </button>
+            </h2>
+            <h2 class="accordion-header">
+              <button class="accordion-button" data-tipo="BIOBOLSA ECOMMERCE" data-img="assets/ecommerce.png">
+                <i class="fas fa-box" style="margin-right: 10px;"></i>
+                Biobolsa Ecommerce
+              </button>
+            </h2>
+            <h2 class="accordion-header">
+              <button class="accordion-button" data-tipo="BIOBOLSA CAMISETA" data-img="assets/camiseta.png">
+                <i class="fas fa-tshirt" style="margin-right: 10px;"></i>
+                Biobolsa Camiseta
+              </button>
+            </h2>
+            <h2 class="accordion-header">
+              <button class="accordion-button" data-tipo="BIOFILM" data-img="assets/bicapa.png">
+                <i class="fas fa-layer-group" style="margin-right: 10px;"></i>
+                Biofilm
+              </button>
+            </h2>
+          </div>
+          <div class="content-items product-preview">
+            <img id="preview-img" class="item-img" src="assets/brida.png" alt="preview" />
+          </div>
+        </div>
+
+        <div class="section-title">
+          <i class="fas fa-ruler-combined"></i>
+          Dimensiones
+        </div>
+        
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="input-ancho" class="form-label">
+                <i class="fas fa-arrows-alt-h"></i>
+                Ancho (mm)
+              </label>
+              <input type="number" class="form-control" id="input-ancho" value="360" />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="input-largo" class="form-label">
+                <i class="fas fa-arrows-alt-v"></i>
+                Largo (mm)
+              </label>
+              <input type="number" class="form-control" id="input-largo" value="500" />
+            </div>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="input-espesor" class="form-label">
+                <i class="fas fa-layer-group"></i>
+                Espesor (μm)
+              </label>
+              <input type="number" class="form-control" id="input-espesor" value="30" />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="input-materialidad" class="form-label">
+                <i class="fas fa-atom"></i>
+                Materialidad
+              </label>
+              <select class="form-control" id="input-materialidad">
+                <option>Bio E-8i</option>
+                <option>Bio E-9</option>
+                <option selected>Bio E-10</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-title">
+          <i class="fas fa-envelope"></i>
+          Contacto
+        </div>
+        
+        <div class="form-group">
+          <label for="input-email" class="form-label">
+            <i class="fas fa-at"></i>
+            Email (para envío de resultados)
+          </label>
+          <input type="email" class="form-control" id="input-email" placeholder="tu.correo@ejemplo.com" />
+        </div>
+
+        <button class="calculate-btn" onclick="guardarDatos()">
+          <i class="fas fa-calculator" style="margin-right: 10px;"></i>
+          Analizar con Cyllium AI
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script src="js/language.js"></script>
+  <script>
+    let tipoSeleccionado = "BIOBOLSA BRIDA";  // valor por defecto
+    let imagenSeleccionada = "assets/brida.png";
+
+    // Mapeo a valores esperados por el modelo
+    const mapaTipos = {
+      "BIOBOLSA BRIDA": "Brida",
+      "BIOBOLSA ECOMMERCE": "Ecommerce/Wicketed",
+      "BIOBOLSA CAMISETA": "Camiseta",
+      "BIOFILM": "Saco",
+      "BIODOYPACK": "Saco"
+    };
+
+    // Set first button as active by default
+    document.querySelector(".accordion-button").classList.add("active");
+
+    document.querySelectorAll(".accordion-button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        // Desactivar todos
+        document.querySelectorAll(".accordion-button").forEach(b => b.classList.remove("active"));
+
+        // Activar el actual
+        btn.classList.add("active");
+
+        // Guardar selección
+        tipoSeleccionado = btn.dataset.tipo;
+        imagenSeleccionada = btn.dataset.img;
+
+        // Cambiar imagen
+        document.getElementById("preview-img").src = imagenSeleccionada;
+      });
+    });
+
+    function guardarDatos() {
+      const tipoFinal = mapaTipos[tipoSeleccionado] || "Camiseta";
+      const material = document.getElementById("input-materialidad").value;
+      const largo = parseFloat(document.getElementById("input-largo").value);
+      const ancho = parseFloat(document.getElementById("input-ancho").value);
+      const espesor = parseFloat(document.getElementById("input-espesor").value);
+      const email = document.getElementById("input-email").value.trim();
+
+      localStorage.setItem("producto", tipoFinal);
+      localStorage.setItem("materialidad", material);
+      localStorage.setItem("largo", largo);
+      localStorage.setItem("ancho", ancho);
+      localStorage.setItem("espesor", espesor);
+      if (email) {
+        localStorage.setItem("cyllium_email", email); // Guardar email solo si se ingresó
+      }
+
+      window.location.href = "results.html";
+    }
+
+    // Function to adjust content when viewport changes size
+    function adjustForViewport() {
+      if (window.innerWidth <= 767) {
+        document.querySelector('.accordion.style-1').style.flexDirection = 'column';
+      } else {
+        document.querySelector('.accordion.style-1').style.flexDirection = 'row';
+      }
+    }
+
+    // Adjust on load and resize
+    window.addEventListener('load', adjustForViewport);
+    window.addEventListener('resize', adjustForViewport);
+  </script>
+</body>
+</html>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú Principal - Cyllium AI</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/naitus-template.css">
+    <link rel="stylesheet" href="css/naitus-guide.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/66b2bdd969.js" crossorigin="anonymous"></script>
+    <style>
+        body#static {
+            background: linear-gradient(135deg, #1a1d2b 0%, #2c3e50 50%, #1a1d2b 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            position: relative;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            zoom: 70%;
+        }
+
+        body#static::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(63, 207, 142, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(100, 212, 164, 0.15) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .menu-container {
+            position: relative;
+            z-index: 2;
+            background: linear-gradient(135deg, rgba(23, 26, 39, 0.95), rgba(41, 45, 62, 0.9));
+            padding: 50px;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            max-width: 600px;
+            width: 95%;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(63, 207, 142, 0.2);
+        }
+
+        .menu-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3fcf8e, #64d4a4, #85e6c1);
+            border-radius: 24px 24px 0 0;
+        }
+
+        .logo-container img {
+            max-width: 200px;
+            margin-bottom: 30px;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-container img:hover {
+            transform: scale(1.05);
+        }
+
+        .menu-title {
+            color: #ffffff;
+            font-size: 2.6rem;
+            font-weight: 900;
+            margin-bottom: 40px;
+            text-align: center;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #3fcf8e, #64d4a4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 10px rgba(63, 207, 142, 0.3);
+        }
+
+        .menu-buttons {
+            display: grid;
+            gap: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .menu-button {
+            background: linear-gradient(135deg, rgba(41, 45, 62, 0.9), rgba(53, 58, 79, 0.8));
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 20px 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #3fcf8e, transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .menu-button:hover:not([disabled]) {
+            background: linear-gradient(135deg, #3fcf8e, #64d4a4);
+            color: #1a1d2b;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(63, 207, 142, 0.4);
+            border-color: #3fcf8e;
+        }
+
+        .menu-button:hover:not([disabled])::before {
+            opacity: 1;
+        }
+
+        .menu-button[disabled] {
+            background: rgba(74, 78, 90, 0.5);
+            border-color: #6c757d;
+            cursor: not-allowed;
+            opacity: 0.6;
+            color: #adb5bd;
+        }
+
+        .menu-button[disabled]:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .language-container {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            z-index: 100;
+        }
+        
+        .language-select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            color: white;
+            padding: 10px 15px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            outline: none;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .language-select:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .language-select option {
+            background-color: #1a1d2b;
+            color: white;
+        }
+
+        /* Page Loader Styles */
+        .page-loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1d2b, #2c3e50);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loader-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(63, 207, 142, 0.3);
+            border-top: 4px solid #3fcf8e;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .menu-container {
+                padding: 30px 25px;
+                width: 98%;
+            }
+            
+            .menu-title {
+                font-size: 1.8rem;
+            }
+
+            .language-container {
+                top: 20px;
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+<body id="static">
+    <div id="page-loader-overlay" class="page-loader-overlay">
+        <div class="loader-spinner"></div>
+    </div>
+    
+    <!-- Language Selector -->
+    <div class="language-container">
+      <select id="language-select" class="language-select" onchange="changeLanguage(this.value)">
+        <option value="en">🇺🇸 English</option>
+        <option value="es">🇪🇸 Español</option>
+        <option value="pt">🇧🇷 Português</option>
+      </select>
+    </div>
+    
+    <main class="main-bg">
+        <video playsinline autoplay muted loop id="backgroundVideo" style="position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; width: auto; height: auto; z-index: -100; background-size: cover;">
+            <source src="assets/video.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="mask" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: -99;"></div>
+
+        <div class="menu-container">
+            <div class="logo-container">
+                <img src="logo_footer.png" alt="Bioelements Logo">
+            </div>
+            <h1 class="menu-title">Aplicaciones Cyllium AI</h1>
+            <div class="menu-buttons">
+                <div class="menu-button" onclick="window.location.href='formulation-design.html'">
+                    Diseño de formulaciones
+                </div>
+                
+                <div class="menu-button" onclick="window.location.href='calculator.html'">
+                    Calculadora de Impacto Ambiental
+                </div>
+                
+                <div class="menu-button" onclick="window.location.href='products.html'">
+                    Biodegradabilidad de nuestros productos
+                </div>
+                
+                <div class="menu-button" onclick="window.location.href='biolab-virtual.html'">
+                    Biolab Virtual
+                </div>
+                
+                <div class="menu-button" onclick="window.location.href='my_products.html'">
+                    Mis Productos
+                </div>
+                
+                <div class="menu-button" onclick="window.location.href='ai-assistant.html'">
+                    Asistente IA de Biomateriales
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/language.js"></script>
+    <script src="js/loader.js"></script>
+</body>
+</html> 

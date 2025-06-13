@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/bootstrap.min.css" />
+  <link rel="stylesheet" href="css/naitus-template.css" />
+  <link rel="stylesheet" href="css/naitus-guide.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <title>Results</title>
+  <style>
+    @keyframes drawLine {
+      from {
+        stroke-dashoffset: 1000;
+      }
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+    
+    .animated-line {
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+      animation: drawLine 2s ease-in-out forwards;
+    }
+    
+    /* Language Selector Styles */
+    .language-container {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
+    }
+    
+    .language-select {
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 20px;
+      color: white;
+      padding: 5px 10px;
+      font-size: 14px;
+      cursor: pointer;
+      text-align: center;
+      outline: none;
+      width: 110px;
+    }
+    
+    .language-select option {
+      background-color: #292d3e;
+      color: white;
+    }
+  </style>
+</head>
+<body id="static">
+  <!-- Language Selector -->
+  <div class="language-container">
+    <select id="language-select" class="language-select" onchange="changeLanguage(this.value)">
+      <option value="en">English</option>
+      <option value="es">Español</option>
+      <option value="pt">Português</option>
+    </select>
+  </div>
+  
+  <main class="main-bg">
+    <div class="row justify-content-center align-items-center w-100">
+      <div class="mobile-frame fixed">
+        <div class="view">
+          <div id="loader" class="loader">
+            <div class="loader-wrapper">
+              <div class="loader-circle">
+                <div class="circle circle-front"></div>
+                <div class="circle circle-rear"></div>
+              </div>
+            </div>
+            <div class="d-flex justify-content-center align-items-center mt-5">
+              <p class="text-white me-3">Loading</p>
+              <div class="spinner p-0">
+                <div class="bounce1"></div>
+                <div class="bounce2"></div>
+                <div class="bounce3"></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="content" class="content mt-5" style="display: none;">
+            <div class="img-container">
+              <p id="msg-inicial" style="color:white; font-size:18px; text-align:center; padding:20px;">
+                Selecciona el tipo de biodegradación que deseas predecir
+              </p>
+            </div>
+
+            <div class="category-container" style="margin-top: 20px;">
+              <div class="category" data-ambiente="Aeróbica">
+                <div class="left-side"><div class="barleft green white"></div>
+                  <p class="text">Aeróbico</p><p class="time">ASTM D6400 - ISO14855 (>90% en 180 días)</p>
+                </div>
+                <div class="right-side">
+                  <div class="status-icon checked" style="display: none;"><img src="assets/icons8-marca-de-verificacion.svg" /></div>
+                  <div class="status-icon error" style="display: none;"><img src="assets/icons8-x-48.png" /></div>
+                </div>
+              </div>
+
+              <div class="category" data-ambiente="Anaeróbica">
+                <div class="left-side"><div class="barleft green"></div>
+                  <p class="text">Anaeróbico</p><p class="time">ISO 14853 (>90% en 365 días)</p>
+                </div>
+                <div class="right-side">
+                  <div class="status-icon checked" style="display: none;"><img src="assets/icons8-marca-de-verificacion.svg" /></div>
+                  <div class="status-icon error" style="display: none;"><img src="assets/icons8-x-48.png" /></div>
+                </div>
+              </div>
+
+              <div class="category" data-ambiente="Ambiental">
+                <div class="left-side"><div class="barleft green white"></div>
+                  <p class="text">Ambiental</p><p class="time"> Hongos Ubiquitarios (>98% en 600 días)</p>
+                </div>
+                <div class="right-side">
+                  <div class="status-icon checked" style="display: none;"><img src="assets/icons8-marca-de-verificacion.svg" /></div>
+                  <div class="status-icon error" style="display: none;"><img src="assets/icons8-x-48.png" /></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row justify-content-end mt-5">
+              <div class="float-icon position-relative mt-5">
+                <a href="save-info.html"><img src="assets/icons8-derecha-circulo-64.png" /></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="mask"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <script src="js/main.js"></script>
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script src="js/language.js"></script>
+
+  <script>
+    function enviarPrediccion(ambiente) {
+      const tipo = localStorage.getItem("producto") || "Bolsa";
+      const largo = localStorage.getItem("largo") || "30";
+      const ancho = localStorage.getItem("ancho") || "20";
+      const espesor = localStorage.getItem("espesor") || "25";
+      const material = localStorage.getItem("materialidad") || "PLA";
+
+      // Validar datos antes de enviar
+      if (!tipo || !largo || !ancho || !espesor || !material) {
+        console.error("⚠️ Datos incompletos en localStorage");
+        const container = document.querySelector(".img-container");
+        container.innerHTML = "<p style='color: white; text-align: center;'>Error: Datos incompletos</p>";
+        return;
+      }
+
+      const payload = {
+        tipo_producto: tipo,
+        largo: largo,
+        ancho: ancho,
+        espesor: espesor,
+        materialidad: material,
+        ambiente: ambiente
+      };
+
+      console.log("📤 Enviando payload:", payload);
+
+      fetch(API, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        mode: "cors",
+        credentials: "omit",
+        body: JSON.stringify(payload)
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Error HTTP: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log("✅ Respuesta recibida del backend:", data);
+
+        if (data.error) {
+          console.error("Error del servidor:", data.error);
+          const container = document.querySelector(".img-container");
+          container.innerHTML = `<p style='color: white; text-align: center;'>Error: ${data.error}</p>`;
+          return;
+        }
+
+        const container = document.querySelector(".img-container");
+
+        // Eliminar texto inicial si existe
+        const msg = document.getElementById("msg-inicial");
+        if (msg) msg.remove();
+
+        // Eliminar cualquier imagen previa
+        container.innerHTML = "";
+
+        // Create animated SVG chart with the data points
+        createAnimatedChart(container, data.t, data.y, ambiente);
+
+        // Obtener los criterios según el ambiente
+        const criterios = {
+          "Aeróbica": { dias: 180, porcentaje: 90 },
+          "Anaeróbica": { dias: 365, porcentaje: 90 },
+          "Ambiental": { dias: 600, porcentaje: 98 }
+        };
+
+        const criterio = criterios[ambiente];
+        if (!criterio) {
+          console.error("Ambiente no reconocido:", ambiente);
+          return;
+        }
+
+        // Encontrar el valor de biodegradación en el tiempo crítico
+        const idx = data.t.findIndex(t => t >= criterio.dias);
+        const valorEnTiempoCritico = idx !== -1 ? data.y[idx] : data.y[data.y.length - 1];
+        const cumpleNorma = valorEnTiempoCritico >= criterio.porcentaje;
+
+        console.log(`Biodegradación en ${criterio.dias} días: ${valorEnTiempoCritico.toFixed(2)}%`);
+        console.log(`Cumple norma (>${criterio.porcentaje}%): ${cumpleNorma}`);
+
+        // Mostrar íconos de verificación o error
+        document.querySelectorAll(".category").forEach(cat => {
+          const amb = cat.dataset.ambiente;
+          const check = cat.querySelector(".status-icon.checked");
+          const cross = cat.querySelector(".status-icon.error");
+
+          if (amb === ambiente) {
+            if (cumpleNorma) {
+              check.style.display = "block";
+              cross.style.display = "none";
+            } else {
+              check.style.display = "none";
+              cross.style.display = "block";
+            }
+          } else {
+            check.style.display = "none";
+            cross.style.display = "none";
+          }
+        });
+      })
+      .catch(error => {
+        console.error("🛑 Error al predecir:", error);
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const loader = document.getElementById("loader");
+      const content = document.getElementById("content");
+      loader.style.display = "none";
+      content.style.display = "flex";
+
+      document.querySelectorAll(".category").forEach(cat => {
+        cat.addEventListener("click", () => {
+          const ambiente = cat.dataset.ambiente;
+          console.log("🟢 Botón presionado:", ambiente);
+          localStorage.setItem("cyllium_last_ambiente", ambiente);
+          enviarPrediccion(ambiente);
+        });
+      });
+    });
+
+    // Function to create animated SVG chart
+    function createAnimatedChart(container, t, y, ambiente) {
+      // Set chart dimensions
+      const width = 360;
+      const height = 270;
+      const margin = { top: 30, right: 20, bottom: 50, left: 40 };
+      const innerWidth = width - margin.left - margin.right;
+      const innerHeight = height - margin.top - margin.bottom;
+
+      // Create SVG
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("width", width);
+      svg.setAttribute("height", height);
+      svg.style.backgroundColor = "transparent";
+      container.appendChild(svg);
+
+      // Create group for chart elements
+      const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      g.setAttribute("transform", `translate(${margin.left},${margin.top})`);
+      svg.appendChild(g);
+
+      // Get norm threshold based on ambiente
+      let normThreshold;
+      let normDays;
+      switch(ambiente) {
+        case "Aeróbica":
+          normThreshold = 90;
+          normDays = 180;
+          break;
+        case "Anaeróbica":
+          normThreshold = 90;
+          normDays = 365;
+          break;
+        case "Ambiental":
+          normThreshold = 98;
+          normDays = 600;
+          break;
+        default:
+          normThreshold = 90;
+          normDays = 180;
+      }
+
+      // Use local copies of data, provide defaults if necessary
+      let localT = Array.isArray(t) && t.length > 0 ? t : [0, 100, 200, 300, 400, 500, 600];
+      let localY = Array.isArray(y) && y.length > 0 ? y : [0, 25, 45, 60, 72, 85, 95];
+      
+      if (!Array.isArray(t) || t.length === 0 || !Array.isArray(y) || y.length === 0) {
+        console.warn("⚠️ Datos de entrada inválidos o vacíos, usando datos de ejemplo.");
+      }
+      
+      // Ensure arrays have the same length for plotting
+      if (localT.length !== localY.length) {
+          console.error("❌ Error: Los arrays de tiempo (t) y degradación (y) tienen longitudes diferentes.");
+          container.innerHTML = "<p style='color: white; text-align: center;'>Error: Inconsistencia en los datos</p>";
+          return;
+      }
+
+      // Calculate scales
+      const xMax = 600;
+      const yMax = 100;
+      
+      const xScale = value => (value / xMax) * innerWidth;
+      const yScale = value => innerHeight - (value / yMax) * innerHeight;
+
+      // Find intersection point with norm threshold
+      let intersectionPoint = null;
+      for (let i = 1; i < localY.length; i++) {
+        if (localY[i-1] <= normThreshold && localY[i] >= normThreshold) {
+          // Linear interpolation to find exact intersection point
+          const ratio = (normThreshold - localY[i-1]) / (localY[i] - localY[i-1]);
+          const intersectX = localT[i-1] + ratio * (localT[i] - localT[i-1]);
+          intersectionPoint = {
+            x: xScale(intersectX),
+            y: yScale(normThreshold),
+            time: Math.round(intersectX)
+          };
+          break;
+        }
+      }
+
+      // Create path data
+      let pathData = "";
+      for (let i = 0; i < localT.length; i++) {
+        const x = xScale(localT[i]);
+        const yCoord = yScale(localY[i]);
+        if (i === 0) {
+          pathData += `M ${x},${yCoord} `;
+        } else {
+          pathData += `L ${x},${yCoord} `;
+        }
+      }
+
+      // Create path
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", pathData);
+      path.setAttribute("fill", "none");
+      path.setAttribute("stroke", "#80D88F");
+      path.setAttribute("stroke-width", "2.5");
+      path.classList.add("animated-line");
+      g.appendChild(path);
+
+      // Add norm threshold line and intersection point if found
+      if (intersectionPoint) {
+        // Add dashed horizontal line at norm threshold
+        const normLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        normLine.setAttribute("x1", 0);
+        normLine.setAttribute("y1", yScale(normThreshold));
+        normLine.setAttribute("x2", innerWidth);
+        normLine.setAttribute("y2", yScale(normThreshold));
+        normLine.setAttribute("stroke", "red");
+        normLine.setAttribute("stroke-width", "1");
+        normLine.setAttribute("stroke-dasharray", "5,5");
+        g.appendChild(normLine);
+
+        // Add red dot at intersection point
+        const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        dot.setAttribute("cx", intersectionPoint.x);
+        dot.setAttribute("cy", intersectionPoint.y);
+        dot.setAttribute("r", "4");
+        dot.setAttribute("fill", "red");
+        g.appendChild(dot);
+
+        // Add intersection point label
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.textContent = `${intersectionPoint.time} días`;
+        label.setAttribute("x", intersectionPoint.x + 10);
+        label.setAttribute("y", intersectionPoint.y - 10);
+        label.setAttribute("fill", "white");
+        label.setAttribute("font-size", "10px");
+        g.appendChild(label);
+      }
+
+      // Add title
+      const title = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      title.setAttribute("id", "chart-title");
+      title.textContent = `Cinética de biodegradación - ${ambiente}`;
+      title.setAttribute("x", innerWidth / 2);
+      title.setAttribute("y", -10);
+      title.setAttribute("text-anchor", "middle");
+      title.setAttribute("fill", "white");
+      title.style.fontWeight = "bold";
+      g.appendChild(title);
+
+      // Add axes
+      // X axis
+      const xAxis = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      xAxis.setAttribute("x1", 0);
+      xAxis.setAttribute("y1", innerHeight);
+      xAxis.setAttribute("x2", innerWidth);
+      xAxis.setAttribute("y2", innerHeight);
+      xAxis.setAttribute("stroke", "rgba(255,255,255,0.3)");
+      g.appendChild(xAxis);
+
+      // X axis label
+      const xLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      xLabel.setAttribute("id", "x-axis-label");
+      xLabel.textContent = "Tiempo (días)";
+      xLabel.setAttribute("x", innerWidth / 2);
+      xLabel.setAttribute("y", innerHeight + 40);
+      xLabel.setAttribute("text-anchor", "middle");
+      xLabel.setAttribute("fill", "white");
+      g.appendChild(xLabel);
+
+      // Y axis
+      const yAxis = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      yAxis.setAttribute("x1", 0);
+      yAxis.setAttribute("y1", 0);
+      yAxis.setAttribute("x2", 0);
+      yAxis.setAttribute("y2", innerHeight);
+      yAxis.setAttribute("stroke", "rgba(255,255,255,0.3)");
+      g.appendChild(yAxis);
+
+      // Y axis label
+      const yLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      yLabel.setAttribute("id", "y-axis-label");
+      yLabel.textContent = "Biodegradación (%)";
+      yLabel.setAttribute("transform", `translate(-29,${innerHeight/2}) rotate(-90)`);
+      yLabel.setAttribute("text-anchor", "middle");
+      yLabel.setAttribute("fill", "white");
+      g.appendChild(yLabel);
+
+      // Y ticks
+      for (let i = 0; i <= 100; i += 20) {
+        const yTick = yScale(i); // Use yTick to avoid conflict
+        
+        // Tick line
+        const tick = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        tick.setAttribute("x1", -5);
+        tick.setAttribute("y1", yTick);
+        tick.setAttribute("x2", 0);
+        tick.setAttribute("y2", yTick);
+        tick.setAttribute("stroke", "rgba(255,255,255,0.5)");
+        g.appendChild(tick);
+        
+        // Tick label
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.textContent = i;
+        label.setAttribute("x", -10);
+        label.setAttribute("y", yTick + 5);
+        label.setAttribute("text-anchor", "end");
+        label.setAttribute("fill", "white");
+        label.style.fontSize = "10px";
+        g.appendChild(label);
+        
+        // Grid line
+        const grid = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        grid.setAttribute("x1", 0);
+        grid.setAttribute("y1", yTick);
+        grid.setAttribute("x2", innerWidth);
+        grid.setAttribute("y2", yTick);
+        grid.setAttribute("stroke", "rgba(255,255,255,0.1)");
+        grid.setAttribute("stroke-dasharray", "2,2");
+        g.appendChild(grid);
+      }
+      
+      // X ticks
+      for (let i = 0; i <= 600; i += 100) {
+        const xTick = xScale(i); // Use xTick to avoid conflict
+        
+        // Tick line
+        const tick = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        tick.setAttribute("x1", xTick);
+        tick.setAttribute("y1", innerHeight);
+        tick.setAttribute("x2", xTick);
+        tick.setAttribute("y2", innerHeight + 5);
+        tick.setAttribute("stroke", "rgba(255,255,255,0.5)");
+        g.appendChild(tick);
+        
+        // Tick label
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.textContent = i;
+        label.setAttribute("x", xTick);
+        label.setAttribute("y", innerHeight + 20);
+        label.setAttribute("text-anchor", "middle");
+        label.setAttribute("fill", "white");
+        label.style.fontSize = "10px";
+        g.appendChild(label);
+      }
+      
+      // After creating the chart, apply language translations
+      if (typeof applyLanguage === 'function') {
+        const currentLang = getLanguage();
+        applyLanguage(currentLang);
+      }
+    }
+  </script>
+</body>
+</html>

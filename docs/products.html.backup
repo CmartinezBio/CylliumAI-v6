@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/bootstrap.min.css" />
+  <link rel="stylesheet" href="css/naitus-template.css" />
+  <link rel="stylesheet" href="css/naitus-guide.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <script src="https://kit.fontawesome.com/66b2bdd969.js" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <title>Products</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: auto;
+    }
+    .main-bg {
+      height: 100vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .scroll-wrapper {
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .form-group {
+      margin-bottom: 2rem;
+    }
+    .form-control {
+      background-color: #292d3e;
+      color: white;
+      border: 1px solid #3fcf8e;
+      border-radius: 12px;
+      padding: 0.85rem 1.2rem;
+      font-size: 1rem;
+    }
+    .form-control:focus {
+      border-color: #59f3b7;
+      box-shadow: 0 0 6px rgba(89, 243, 183, 0.5);
+    }
+    .form-label {
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+    .accordion-button.active {
+      background-color: #3fcf8e;
+      color: black;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body id="static">
+  <main class="main-bg">
+    <div class="scroll-wrapper">
+      <div class="content justify-content-md-center justify-content-start">
+        <div class="table-container mt-5">
+          <div class="table-item">
+            <div class="heading">Tipos de Producto</div>
+            <div class="accordion style-1" id="accordionExample">
+              <div class="list-items">
+                <h2 class="accordion-header">
+                  <button class="accordion-button" data-tipo="BIOBOLSA BRIDA" data-img="assets/BOLSA-BRIDA (1).png">Biobolsa Brida</button>
+                </h2>
+                <h2 class="accordion-header">
+                  <button class="accordion-button" data-tipo="BIOBOLSA ECOMMERCE" data-img="assets/BOLSA-ECOMMERCE (4).png">Biobolsa Ecommerce</button>
+                </h2>
+                <h2 class="accordion-header">
+                  <button class="accordion-button" data-tipo="BIOBOLSA CAMISETA" data-img="assets/BOLSA-CAMISETA (2) (1).png">Biobolsa Camiseta</button>
+                </h2>
+                <h2 class="accordion-header">
+                  <button class="accordion-button" data-tipo="BIOFILM" data-img="assets/BIO-FILM-BICAPA (1).png">Biofilm</button>
+                </h2>
+              </div>
+              <div class="content-items text-center mt-4">
+                <img id="preview-img" class="item-img" src="assets/BOLSA-BRIDA (1).png" alt="preview" />
+              </div>
+            </div>
+
+            <!-- Dimensiones y Materialidad -->
+            <div class="heading">Dimensiones</div>
+            <div class="form-group px-3">
+              <label for="input-ancho" class="form-label text-white">Ancho (mm)</label>
+              <input type="number" class="form-control" id="input-ancho" value="360" />
+            </div>
+            <div class="form-group px-3">
+              <label for="input-largo" class="form-label text-white">Largo (mm)</label>
+              <input type="number" class="form-control" id="input-largo" value="500" />
+            </div>
+            <div class="form-group px-3">
+              <label for="input-espesor" class="form-label text-white">Espesor (μm)</label>
+              <input type="number" class="form-control" id="input-espesor" value="30" />
+            </div>
+            <div class="form-group px-3">
+              <label for="input-materialidad" class="form-label text-white">Materialidad</label>
+              <select class="form-control" id="input-materialidad">
+                <option>Bio E-8i</option>
+                <option>Bio E-9</option>
+                <option selected>Bio E-10</option>
+              </select>
+            </div>
+
+            <!-- Email Input -->
+            <div class="heading">Contacto</div>
+            <div class="form-group px-3">
+              <label for="input-email" class="form-label text-white">Email (para envío de resultados)</label>
+              <input type="email" class="form-control" id="input-email" placeholder="tu.correo@ejemplo.com" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Botón Calcular -->
+        <div class="row justify-content-center mt-5">
+          <button class="calculate-btn" onclick="guardarDatos()" style="margin-bottom: 80px;">Calcular</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script>
+    let tipoSeleccionado = "BIOBOLSA BRIDA";  // valor por defecto
+    let imagenSeleccionada = "assets/BOLSA-BRIDA (1).png";
+
+    // Mapeo a valores esperados por el modelo
+    const mapaTipos = {
+      "BIOBOLSA BRIDA": "Brida",
+      "BIOBOLSA ECOMMERCE": "Ecommerce/Wicketed",
+      "BIOBOLSA CAMISETA": "Camiseta",
+      "BIOFILM": "Saco",
+      "BIODOYPACK": "Saco"
+    };
+
+    document.querySelectorAll(".accordion-button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        // Desactivar todos
+        document.querySelectorAll(".accordion-button").forEach(b => b.classList.remove("active"));
+
+        // Activar el actual
+        btn.classList.add("active");
+
+        // Guardar selección
+        tipoSeleccionado = btn.dataset.tipo;
+        imagenSeleccionada = btn.dataset.img;
+
+        // Cambiar imagen
+        document.getElementById("preview-img").src = imagenSeleccionada;
+      });
+    });
+
+    function guardarDatos() {
+      const tipoFinal = mapaTipos[tipoSeleccionado] || "Camiseta";
+      const material = document.getElementById("input-materialidad").value;
+      const largo = parseFloat(document.getElementById("input-largo").value);
+      const ancho = parseFloat(document.getElementById("input-ancho").value);
+      const espesor = parseFloat(document.getElementById("input-espesor").value);
+      const email = document.getElementById("input-email").value.trim();
+
+      localStorage.setItem("producto", tipoFinal);
+      localStorage.setItem("materialidad", material);
+      localStorage.setItem("largo", largo);
+      localStorage.setItem("ancho", ancho);
+      localStorage.setItem("espesor", espesor);
+      if (email) {
+        localStorage.setItem("cyllium_email", email); // Guardar email solo si se ingresó
+      }
+
+      window.location.href = "results.html";
+    }
+  </script>
+</body>
+</html>

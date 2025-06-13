@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Impacto Ambiental - Cyllium AI</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/naitus-template.css">
+    <link rel="stylesheet" href="css/naitus-guide.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body#static {
+            background: linear-gradient(135deg, #1a1d2b 0%, #2c3e50 50%, #1a1d2b 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            position: relative;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            zoom: 70%;
+        }
+
+        body#static::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(63, 207, 142, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(100, 212, 164, 0.15) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .component-card {
+            background: linear-gradient(135deg, rgba(41, 45, 62, 0.9), rgba(53, 58, 79, 0.8));
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(63, 207, 142, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .component-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3fcf8e, #64d4a4);
+            border-radius: 16px 16px 0 0;
+        }
+
+        .component-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(63, 207, 142, 0.2);
+            border-color: rgba(63, 207, 142, 0.5);
+        }
+
+        .material-select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 12px;
+            padding: 12px 16px;
+            width: 100%;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .material-select:focus {
+            outline: none;
+            border-color: #3fcf8e;
+            box-shadow: 0 0 0 3px rgba(63, 207, 142, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .material-select option {
+            background-color: #1a1d2b;
+            color: white;
+            padding: 10px;
+        }
+
+        .material-select optgroup {
+            background-color: #2c3e50;
+            color: #3fcf8e;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 8px;
+        }
+
+        .material-select optgroup option {
+            background-color: #1a1d2b;
+            color: white;
+            padding: 12px 20px;
+            margin: 2px 0;
+        }
+
+        .material-select optgroup option:hover {
+            background-color: rgba(63, 207, 142, 0.2);
+        }
+
+        .impact-metric {
+            background: linear-gradient(135deg, rgba(63, 207, 142, 0.1), rgba(100, 212, 164, 0.05));
+            border-radius: 16px;
+            padding: 25px;
+            margin: 20px 0;
+            color: white;
+            border: 1px solid rgba(63, 207, 142, 0.3);
+            text-align: center;
+        }
+
+        .add-component-btn {
+            background: linear-gradient(135deg, #3fcf8e, #64d4a4);
+            border: none;
+            border-radius: 50px;
+            padding: 15px 30px;
+            color: #1a1d2b;
+            margin: 20px 0;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(63, 207, 142, 0.3);
+            width: 100%;
+        }
+
+        .add-component-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(63, 207, 142, 0.4);
+            background: linear-gradient(135deg, #35b879, #5bc99a);
+        }
+
+        .calculate-btn {
+            background: linear-gradient(135deg, #3fcf8e, #64d4a4);
+            border: none;
+            border-radius: 50px;
+            padding: 18px 40px;
+            color: #1a1d2b;
+            font-weight: 700;
+            font-size: 18px;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(63, 207, 142, 0.4);
+            width: 100%;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(63, 207, 142, 0.5);
+            background: linear-gradient(135deg, #35b879, #5bc99a);
+        }
+
+        .content-container {
+            position: relative;
+            z-index: 2;
+            background: linear-gradient(135deg, rgba(23, 26, 39, 0.95), rgba(41, 45, 62, 0.9));
+            padding: 50px;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            width: 95%;
+            max-width: 800px;
+            margin: 20px auto;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(63, 207, 142, 0.2);
+        }
+
+        .content-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3fcf8e, #64d4a4, #85e6c1);
+            border-radius: 24px 24px 0 0;
+        }
+
+        .page-title {
+            text-align: center;
+            color: #ffffff;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #3fcf8e, #64d4a4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 10px rgba(63, 207, 142, 0.3);
+        }
+
+        .ai-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(63, 207, 142, 0.2);
+            border: 1px solid rgba(63, 207, 142, 0.3);
+            border-radius: 20px;
+            padding: 8px 16px;
+            margin-bottom: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #3fcf8e;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .language-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+        
+        .language-select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            color: white;
+            padding: 10px 15px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            outline: none;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .language-select:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .language-select option {
+            background-color: #1a1d2b;
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #d86060, #c55555);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(216, 96, 96, 0.3);
+            background: linear-gradient(135deg, #c55555, #b44444);
+        }
+
+        .form-label {
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+
+        #co2-impact {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #3fcf8e;
+            text-shadow: 0 2px 10px rgba(63, 207, 142, 0.3);
+        }
+
+        .back-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            color: #3fcf8e;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .content-container {
+                padding: 30px 25px;
+                width: 98%;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body id="static">
+    <!-- Language Selector -->
+    <div class="language-container">
+        <select id="language-select" class="language-select" onchange="changeLanguage(this.value)">
+            <option value="en">🇺🇸 English</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="pt">🇧🇷 Português</option>
+        </select>
+    </div>
+
+    <main class="main-bg">
+        <video playsinline autoplay muted loop id="backgroundVideo" style="position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; width: auto; height: auto; z-index: -100; background-size: cover;">
+            <source src="assets/video.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="mask" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: -99;"></div>
+
+        <div class="content-container">
+            <div class="text-center">
+                <div class="ai-badge">
+                    <i class="fas fa-calculator"></i>
+                    Cyllium AI Calculator
+                </div>
+                <h2 class="page-title" id="calculator-title">Calculadora de Impacto Ambiental</h2>
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label" id="product-name-label">📦 Nombre del Producto</label>
+                <input type="text" class="material-select" id="product-name" placeholder="Ej: Empaque Eco-friendly">
+            </div>
+            
+            <div id="components-container">
+                <!-- Component template will be cloned and added here -->
+            </div>
+
+            <button class="add-component-btn" onclick="addComponent()" id="add-component-btn">
+                <i class="fas fa-plus" style="margin-right: 8px;"></i>
+                Agregar Componente
+            </button>
+
+            <div class="impact-metric">
+                <h4 class="text-white mb-3" id="total-impact">🌱 Impacto Total Estimado</h4>
+                <div class="mb-3">
+                    <label class="form-label" id="production-volume">📊 Volumen de Producción (unidades)</label>
+                    <input type="number" class="material-select production-volume" value="1" min="1" step="1" onchange="updateTotalImpact()">
+                </div>
+                <div id="co2-impact">CO₂: 0 kg</div>
+            </div>
+
+            <button class="calculate-btn" onclick="calculateAndRedirect()" id="calculate-btn">
+                <i class="fas fa-chart-line" style="margin-right: 8px;"></i>
+                Calcular Impacto
+            </button>
+
+            <div class="mt-3 text-center">
+                <a href="menu.html" class="back-link" id="back-to-menu">
+                    <i class="fas fa-arrow-left" style="margin-right: 8px;"></i>
+                    Volver al Menú
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Component Template (hidden) -->
+    <template id="component-template">
+        <div class="component-card">
+            <div class="mb-3">
+                <label class="form-label" id="component-name">🏷️ Nombre del Componente</label>
+                <input type="text" class="material-select component-name" placeholder="Ej: Empaque primario">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" id="component-type">📋 Tipo de Componente</label>
+                <select class="material-select component-type">
+                    <option value="primary" id="primary-packaging">🎯 Empaque Primario (En contacto directo con el producto)</option>
+                    <option value="secondary" id="secondary-packaging">📦 Empaque Secundario (Agrupa productos con empaque primario)</option>
+                    <option value="tertiary" id="tertiary-packaging">🚛 Empaque Terciario (Para transporte y distribución)</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" id="material">🧪 Material</label>
+                <select class="material-select material-type" onchange="updateImpact(this)">
+                    <optgroup label="🌱 Bioelements Materials">
+                        <option value="bioe8i-resin">BioE8i Resina</option>
+                        <option value="bioe8i-film">BioE8i Film</option>
+                        <option value="bioe8i-laminado">BioE8i Laminado</option>
+                    </optgroup>
+                    <optgroup label="🌿 Bio-based">
+                        <option value="pla">PLA</option>
+                        <option value="pbat">PBAT</option>
+                        <option value="pha">PHA</option>
+                    </optgroup>
+                    <optgroup label="🏭 Conventional Plastics">
+                        <option value="ldpe">LDPE</option>
+                        <option value="hdpe">HDPE</option>
+                        <option value="pp">PP</option>
+                        <option value="pet">PET</option>
+                    </optgroup>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" id="weight">⚖️ Peso (kg)</label>
+                <input type="number" class="material-select weight" value="0.1" min="0.001" step="0.1" onchange="updateImpact(this)">
+            </div>
+            <button class="btn btn-danger btn-sm" onclick="removeComponent(this)" id="delete-btn">
+                <i class="fas fa-trash" style="margin-right: 5px;"></i>
+                Eliminar
+            </button>
+        </div>
+    </template>
+
+    <script src="js/main.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/language.js"></script>
+    <script>
+        // Environmental impact factors per kg of material (only CO2, no waste)
+        const materialImpacts = {
+            // Bioelements Materials
+            'bioe8i-resin': { co2: 1.31 },
+            'bioe8i-film': { co2: 8.18 },
+            'bioe8i-laminado': { co2: 4.80 },
+            // Bio-based
+            pla: { co2: 1.815 },
+            pbat: { co2: 1.221 },
+            pha: { co2: 2.8 },
+            // Conventional Plastics
+            ldpe: { co2: 2.60 },
+            hdpe: { co2: 3.27 },
+            pp: { co2: 3.11 },
+            pet: { co2: 4.03 }
+        };
+
+        function addComponent() {
+            const template = document.getElementById('component-template');
+            const container = document.getElementById('components-container');
+            const clone = template.content.cloneNode(true);
+            container.appendChild(clone);
+            updateTotalImpact();
+        }
+
+        function removeComponent(button) {
+            button.closest('.component-card').remove();
+            updateTotalImpact();
+        }
+
+        function updateImpact(element) {
+            updateTotalImpact();
+        }
+
+        function updateTotalImpact() {
+            let totalCO2 = 0;
+            const volume = parseInt(document.querySelector('.production-volume').value) || 1;
+            document.querySelectorAll('.component-card').forEach(card => {
+                const material = card.querySelector('.material-type').value;
+                const weight = parseFloat(card.querySelector('.weight').value) || 0;
+                if (materialImpacts[material]) {
+                    totalCO2 += materialImpacts[material].co2 * weight;
+                }
+            });
+            totalCO2 *= volume;
+            document.getElementById('co2-impact').textContent = `CO₂: ${totalCO2.toFixed(2)} kg`;
+        }
+
+        function calculateAndRedirect() {
+            const components = [];
+            const productName = document.getElementById('product-name').value.trim() || 'Producto sin nombre';
+            
+            document.querySelectorAll('.component-card').forEach(card => {
+                const componentName = card.querySelector('.component-name').value.trim() || 'Componente';
+                components.push({
+                    name: componentName,
+                    type: card.querySelector('.component-type').value,
+                    material: card.querySelector('.material-type').value,
+                    weight: parseFloat(card.querySelector('.weight').value) || 0
+                });
+            });
+
+            // Add production volume to the stored data
+            const volume = parseInt(document.querySelector('.production-volume').value) || 1;
+            
+            // Store the components data and volume in localStorage
+            localStorage.setItem('packagingComponents', JSON.stringify({
+                productName: productName,
+                components: components,
+                productionVolume: volume
+            }));
+            
+            // Redirect to results page
+            window.location.href = 'calculator_result.html';
+        }
+
+        // Add initial component
+        addComponent();
+    </script>
+</body>
+</html> 

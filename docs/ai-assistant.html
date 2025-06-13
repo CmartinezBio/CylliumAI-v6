@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistente IA de Biomateriales</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/naitus-template.css">
+    <link rel="stylesheet" href="css/naitus-guide.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/66b2bdd969.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1d2b 0%, #2c3e50 50%, #1a1d2b 100%);
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .assistant-container {
+            background: linear-gradient(135deg, rgba(23, 26, 39, 0.95), rgba(41, 45, 62, 0.9));
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            padding: 40px 30px 20px 30px;
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            border: 1px solid rgba(63, 207, 142, 0.2);
+        }
+        .assistant-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .assistant-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #3fcf8e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            color: #fff;
+            margin-right: 18px;
+            box-shadow: 0 2px 8px rgba(63, 207, 142, 0.2);
+        }
+        .assistant-title {
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .chat-box {
+            background: rgba(41, 45, 62, 0.7);
+            border-radius: 16px;
+            padding: 18px;
+            height: 320px;
+            overflow-y: auto;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 8px rgba(63, 207, 142, 0.05);
+        }
+        .message {
+            display: flex;
+            margin-bottom: 14px;
+        }
+        .message.user {
+            justify-content: flex-end;
+        }
+        .message.assistant {
+            justify-content: flex-start;
+        }
+        .message-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+        .message.user .message-content {
+            background: linear-gradient(135deg, #3fcf8e, #64d4a4);
+            color: #1a1d2b;
+            border-bottom-right-radius: 4px;
+        }
+        .message.assistant .message-content {
+            background: #23263a;
+            color: #fff;
+            border-bottom-left-radius: 4px;
+        }
+        .chat-input-container {
+            display: flex;
+            gap: 10px;
+        }
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 16px;
+            border: 1px solid #3fcf8e;
+            font-size: 1rem;
+            outline: none;
+            background: #23263a;
+            color: #fff;
+        }
+        .send-btn {
+            background: linear-gradient(135deg, #3fcf8e, #64d4a4);
+            border: none;
+            border-radius: 16px;
+            color: #1a1d2b;
+            font-weight: 700;
+            padding: 0 22px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .send-btn:hover {
+            background: linear-gradient(135deg, #64d4a4, #3fcf8e);
+        }
+        .back-link {
+            position: absolute;
+            top: 18px;
+            right: 30px;
+            color: #3fcf8e;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: color 0.2s;
+        }
+        .back-link:hover {
+            color: #64d4a4;
+        }
+        @media (max-width: 600px) {
+            .assistant-container {
+                padding: 18px 4px 10px 4px;
+                max-width: 99vw;
+            }
+            .assistant-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .assistant-avatar {
+                margin-bottom: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="assistant-container">
+        <a href="menu.html" class="back-link"><i class="fas fa-arrow-left"></i> Menú</a>
+        <div class="assistant-header">
+            <div class="assistant-avatar"><i class="fas fa-robot"></i></div>
+            <div class="assistant-title">Asistente IA de Biomateriales</div>
+        </div>
+        <div class="chat-box" id="chat-box">
+            <div class="message assistant">
+                <div class="message-content">
+                    ¡Hola! Soy tu asistente virtual especializado en biomateriales y la operacion de Bioelements en la industria del packaging. ¿En qué puedo ayudarte hoy?
+                </div>
+            </div>
+        </div>
+        <form class="chat-input-container" id="chat-form">
+            <input type="text" class="chat-input" id="chat-input" placeholder="Escribe tu pregunta..." autocomplete="off" required />
+            <button type="submit" class="send-btn"><i class="fas fa-paper-plane"></i></button>
+        </form>
+    </div>
+    <script>
+        const chatBox = document.getElementById('chat-box');
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+
+        chatForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const userMsg = chatInput.value.trim();
+            if (!userMsg) return;
+            addMessage('user', userMsg);
+            chatInput.value = '';
+            setTimeout(() => {
+                // Simulación de respuesta automática
+                addMessage('assistant', 'Estoy procesando tu consulta sobre biomateriales... (Aquí irá la respuesta de la IA)');
+            }, 900);
+        });
+
+        function addMessage(sender, text) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'message ' + sender;
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.textContent = text;
+            msgDiv.appendChild(contentDiv);
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+</body>
+</html> 
