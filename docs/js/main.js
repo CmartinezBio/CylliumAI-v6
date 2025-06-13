@@ -1,5 +1,5 @@
 /* ---------- CONFIG ---------- */
-const API = "https://cyllium-backend-v3.onrender.com";   // ← URL del backend en Render
+const API = "https://cylliumai-v5-y91j.onrender.com/";   // ← URL del backend en Render
 /* ---------------------------- */
 
 // Environmental impact factors per kg of material (solo CO2)
